@@ -5,25 +5,20 @@
     "project_id": "jmrsquared-5872c",
     "storage_bucket": "jmrsquared-5872c.appspot.com"
   },
-  "client": [
-    {
+  "client": [{
       "client_info": {
         "mobilesdk_app_id": "1:10410539854:android:fdcaeb7a6800d960",
         "android_client_info": {
           "package_name": "com.jmrsquared.dev"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "10410539854-edjr73or69mndplgbrkg80h5nh87jk2d.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB7TM1KIGfsz25HuNETiAwHqVSNxp-cfLM"
-        }
-      ],
+      "oauth_client": [{
+        "client_id": "10410539854-edjr73or69mndplgbrkg80h5nh87jk2d.apps.googleusercontent.com",
+        "client_type": 3
+      }],
+      "api_key": [{
+        "current_key": "AIzaSyB7TM1KIGfsz25HuNETiAwHqVSNxp-cfLM"
+      }],
       "services": {
         "analytics_service": {
           "status": 1
@@ -35,7 +30,8 @@
         "ads_service": {
           "status": 2
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-4924835910036108~3001656373"
     },
     {
       "client_info": {
@@ -44,17 +40,13 @@
           "package_name": "com.jmrsquared.jmrsquared"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "10410539854-edjr73or69mndplgbrkg80h5nh87jk2d.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB7TM1KIGfsz25HuNETiAwHqVSNxp-cfLM"
-        }
-      ],
+      "oauth_client": [{
+        "client_id": "10410539854-edjr73or69mndplgbrkg80h5nh87jk2d.apps.googleusercontent.com",
+        "client_type": 3
+      }],
+      "api_key": [{
+        "current_key": "AIzaSyB7TM1KIGfsz25HuNETiAwHqVSNxp-cfLM"
+      }],
       "services": {
         "analytics_service": {
           "status": 1
@@ -66,7 +58,8 @@
         "ads_service": {
           "status": 2
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-4924835910036108~3001656373"
     },
     {
       "client_info": {
@@ -75,17 +68,13 @@
           "package_name": "com.jmrsquared.jmrsquaredapp"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "10410539854-edjr73or69mndplgbrkg80h5nh87jk2d.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB7TM1KIGfsz25HuNETiAwHqVSNxp-cfLM"
-        }
-      ],
+      "oauth_client": [{
+        "client_id": "10410539854-edjr73or69mndplgbrkg80h5nh87jk2d.apps.googleusercontent.com",
+        "client_type": 3
+      }],
+      "api_key": [{
+        "current_key": "AIzaSyB7TM1KIGfsz25HuNETiAwHqVSNxp-cfLM"
+      }],
       "services": {
         "analytics_service": {
           "status": 1
@@ -97,7 +86,8 @@
         "ads_service": {
           "status": 2
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-4924835910036108~3001656373"
     }
   ],
   "configuration_version": "1"
