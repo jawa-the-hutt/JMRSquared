@@ -294,7 +294,7 @@ router.post("/add/business", auth.required, (req, res, next) => {
                 if (err) return res.status(512).send(err);
                 cronJob.populateBusinessSettings();
                 cronJob.populateBusinessTargets();
-                res.send("Business successfully saved");
+                res.send(business._id);
             });
         })
         .catch(err => {
