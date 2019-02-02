@@ -4,7 +4,7 @@
       <CardView class="m-b-5" backgroundColor="transparent" row="0" textAlignment="center" shadowOpacity="0.2" shadowRadius="50" elevation="20">
         <GridLayout class="bg-dark-blue-overlay p-y-15 p-5" rows="auto" columns="auto,*,auto">
           <Ripple @tap="navigate('/home')" verticalAlignment="center" borderRadius="50%">
-               <Image verticalAlignment="center" width="50" height="50" class="circle" stretch="aspectFill" src="res://icon" borderRadius="50%" />
+            <Image verticalAlignment="center" width="50" height="50" class="circle" stretch="aspectFill" src="res://icon" borderRadius="50%" />
           </Ripple>
           <Ripple row="0" col="2" verticalAlignment="center" @tap="isEnterEmail = !isEnterEmail">
             <Label class="text-white" verticalAlignment="center" textWrap="true" :text="isEnterEmail ? 'Use numbers' : 'Use email'"></Label>
@@ -40,6 +40,12 @@
               <StackLayout v-show="!isLoading">
                 <Button text="Login" :isEnabled="!isLoading" class="submit-button bg-dark-blue text-white" @tap="submit()"></Button>
               </StackLayout>
+  
+              <GridLayout class="m-10">
+                <Ripple @tap="GoToRegister()">
+                  <label textAlignment="center" class="text-mute text-dark-blue p-15" fontSize="13%" text="Don't have an account? Register today."></label>
+                </Ripple>
+              </GridLayout>
   
               <GridLayout v-if="$router.current.userAuthLevel() > 0" justifyContent="flex-end" columns="*" rows="auto">
                 <Button v-if="$router.current.userAuthLevel() == 3" @tap="navigate('/admin/dashboard',null,{ clearHistory: true })" :text="'Continue as ' + $store.state.cache.cachedAdmin.userName"></Button>
@@ -84,6 +90,9 @@ export default {
     this.isLoading = false;
   },
   methods: {
+    GoToRegister() {
+      this.navigate("/register");
+    },
     pageLoaded() {
       this.$store.commit("refreshCache", {
         db: this.$db,

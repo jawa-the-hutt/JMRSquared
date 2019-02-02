@@ -1,5 +1,6 @@
 import Home from '../components/pages/main/Home.vue'
 import Login from '../components/pages/main/Login.vue'
+import Register from '../components/pages/main/Register.vue'
 
 // Admin
 import AdminDashboard from '../components/pages/admin/Dashboard.vue'
@@ -50,6 +51,15 @@ router.routes = {
     component: Login,
     meta: {
       title: 'Login',
+      authLevel: 0
+    },
+  },
+  '/register': {
+    name: 'register',
+    path: '/register',
+    component: Register,
+    meta: {
+      title: 'Register',
       authLevel: 0
     },
   },
