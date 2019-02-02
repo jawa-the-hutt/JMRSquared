@@ -6,7 +6,7 @@ var serviceAccount = require("../firebase_service_account.json");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://jmrsquared-5872c.firebaseio.com"
-}, "JMRSquared");
+});
 
 var options = {
     priority: "high",
