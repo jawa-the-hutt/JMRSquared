@@ -15,7 +15,7 @@
               </GridLayout>
   
               <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
-                <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-10" fontSize="25%" :text="'mdi-account' | fonticon"></label>
+                <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-10" fontSize="25%" :text="'mdi-account-card-details' | fonticon"></label>
                 <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Full name"></label>
                 <TextField row="1" col="1" returnKeyType="next" v-model="user.fullname" autocorrect="true" autocapitalizationType="none"></TextField>
               </GridLayout>

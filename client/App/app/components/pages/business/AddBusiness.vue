@@ -169,325 +169,331 @@
 </template>
 
 <script>
-  const dialogs = require("ui/dialogs");
-  
-  import * as Toast from "nativescript-toast";
-  import * as LocalNotifications from "nativescript-local-notifications";
-  import * as imageSource from "tns-core-modules/image-source";
-  
-  import * as imagepicker from "nativescript-imagepicker";
-  
-  import * as connectivity from "tns-core-modules/connectivity";
-  
-  export default {
-    data() {
-      return {
-        business: {
-          name: "",
-          logo: null,
-          description: "",
-          type: {
-            icon: "",
-            type: "",
-            index: 0,
-            category: "",
-            optionals: []
-          },
-          options: {
-            types: []
-          }
+const dialogs = require("ui/dialogs");
+
+import * as Toast from "nativescript-toast";
+import * as LocalNotifications from "nativescript-local-notifications";
+import * as imageSource from "tns-core-modules/image-source";
+
+import * as imagepicker from "nativescript-imagepicker";
+
+import * as connectivity from "tns-core-modules/connectivity";
+
+export default {
+  data() {
+    return {
+      business: {
+        name: "",
+        logo: null,
+        description: "",
+        type: {
+          icon: "",
+          type: "",
+          index: 0,
+          category: "",
+          optionals: []
         },
-        savedBusiness: false,
-        txtError: "",
-        currentPage: 0,
-        currentPageTitle: "General Information",
-        tenantName: "",
-        tenantUserName: "",
-        tenantNumbers: "",
-        tenantRoom: "",
-        leaseStartDate: new Date(),
-        leaseEndDate: new Date(),
-        leaseTotalMonths: 0,
-        rentAmount: "",
-        rentDueOn: "1st of each month",
-        hasDeposit: false,
-        depositAmount: "",
-        hasBusary: false,
-        busaryProvider: "",
-        nextOfKin: {
-          name: "",
-          contact: "",
-          relationship: ""
+        options: {
+          types: []
         }
-      };
-    },
-    watch: {
-      currentPage(newVal, oldVal) {
-        switch (newVal) {
-          case 0:
-            this.currentPageTitle = "General Information";
-            break;
-          case 1:
-            this.currentPageTitle = this.business.name + "`s logo";
-            break;
-          case 2:
-            this.currentPageTitle = "Verify information";
-            break;
-          default:
-            this.currentPageTitle = "";
-        }
+      },
+      savedBusiness: false,
+      txtError: "",
+      currentPage: 0,
+      currentPageTitle: "General Information",
+      tenantName: "",
+      tenantUserName: "",
+      tenantNumbers: "",
+      tenantRoom: "",
+      leaseStartDate: new Date(),
+      leaseEndDate: new Date(),
+      leaseTotalMonths: 0,
+      rentAmount: "",
+      rentDueOn: "1st of each month",
+      hasDeposit: false,
+      depositAmount: "",
+      hasBusary: false,
+      busaryProvider: "",
+      nextOfKin: {
+        name: "",
+        contact: "",
+        relationship: ""
       }
-    },
-    created() {
-      this.pageLoaded();
-    },
-    mounted() {
-      this.pageLoaded();
-    },
-    methods: {
-      pageLoaded(args) {
-        var self = this;
-        this.ApplyNavigation(self);
-        this.business.options.types = [];
-  
-        this.$api
-          .getBusinessSettings()
-          .then(
-            response => {
-              this.business.options.types = response;
-              this.changeSelectedBusinessCategory(0);
-            },
-            err => {
-              dialogs.alert(e).then(() => {
-                console.log("Error occurred " + e);
-              });
-            }
-          )
-          .catch(err => {
-            this.$feedback.error({
-              title: "Server error",
-              duration: 4000,
-              message: err,
-              onTap: () => {
-                dialogs.alert("TODO : Handle the error");
-              }
-            });
-          });
-      },
-      submitBusiness() {
-        this.isLoading = true;
-  
-        var connectionType = connectivity.getConnectionType();
-        if (connectionType == connectivity.connectionType.none) {
-          this.$feedback.error({
-            title: "NO INTERNET CONNECTION",
-            duration: 4000,
-            message: "Please switch on your data/wifi."
-          });
-          this.isLoading = false;
-        } else {
-          if (this.business.logo) {
-            new imageSource.ImageSource()
-              .fromAsset(this.business.logo)
-              .then(img => {
-                this.business.logo =
-                  "data:image/png;base64," + img.toBase64String("png");
-                this.$api.addBusiness(
-                    this.$store.state.cache.cachedAdmin._id,
-                    "ADMIN",
-                    this.business
-                  )
-                  .then(
-                    response => {
-                      var statusCode = response.statusCode;
-                      var result = response.content.toString();
-  
-                      if (statusCode == 200) {
-                        this.savedBusiness = response.content.toString();
-  
-                        this.$feedback
-                          .success({
-                            title: this.business.name + " successfully added",
-                            duration: 30000,
-                            onTap: () => {
-                              this.GoToBusiness(this.savedBusiness);
-                            }
-                          })
-                          .then(() => {});
-                      } else {
-                        this.$feedback.error({
-                          title: "Error (" + statusCode + ")",
-                          duration: 4000,
-                          message: result
-                        });
-                      }
-                      this.isLoading = false;
-                    },
-                    e => {
-                      dialogs.alert(e).then(() => {
-                        console.log("Error occurred " + e);
-                      });
-  
-                      this.isLoading = false;
-                    }
-                  )
-                  .catch(err => {
-                    this.$feedback.error({
-                      title: "Server error",
-                      duration: 4000,
-                      message: err,
-                      onTap: () => {
-                        dialogs.alert("TODO : Handle the error");
-                      }
-                    });
-                    this.isLoading = false;
-                  });
-              })
-              .catch(err => {
-                this.$feedback.error({
-                  title: "Unable to upload your logo",
-                  message: "Please choose another image, or go back and remove it.",
-                  duration: 4000
-                });
-              });
-          } else {
-            this.$api
-              .addBusiness(
-                this.$store.state.cache.cachedAdmin._id,
-                "ADMIN",
-                this.business
-              )
-              .then(
-                response => {
-                  var statusCode = response.statusCode;
-                  var result = response.content.toString();
-  
-                  if (statusCode == 200) {
-                    this.savedBusiness = response.content.toString();
-  
-                    this.$feedback
-                      .success({
-                        title: this.business.name + " successfully added",
-                        duration: 30000,
-                        onTap: () => {
-                          this.GoToBusiness(this.savedBusiness);
-                        }
-                      })
-                      .then(() => {});
-                  } else {
-                    this.$feedback.error({
-                      title: "Error (" + statusCode + ")",
-                      duration: 4000,
-                      message: result
-                    });
-                  }
-                  this.isLoading = false;
-                },
-                e => {
-                  dialogs.alert(e).then(() => {
-                    console.log("Error occurred " + e);
-                  });
-  
-                  this.isLoading = false;
-                }
-              )
-              .catch(err => {
-                this.$feedback.error({
-                  title: "Server error",
-                  duration: 4000,
-                  message: err,
-                  onTap: () => {
-                    dialogs.alert("TODO : Handle the error");
-                  }
-                });
-                this.isLoading = false;
-              });
-          }
-        }
-      },
-      canGoForward() {
-        this.txtError = "";
-        if (this.currentPage == 0) {
-          if (this.business.name.length < 2) {
-            this.txtError = "Provide a valid business name.";
-            return false;
-          } else if (this.business.type.index < 0) {
-            this.txtError =
-              "Please pick a business type, make sure you have internet connection.";
-            return false;
-          } else {
-            var fails = this.business.type.optionals
-              .filter(o => o.required && (!o.answer || o.answer.length < 2))
-              .map(o => o.requiredError);
-            if (fails && fails.length > 0) {
-              this.txtError = fails[0];
-              return false;
-            }
-          }
-          return true;
-        } else if (this.currentPage == 1) {
-          return true;
-        } else if (this.currentPage == 2) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-      moveForward() {
-        if (this.canGoForward()) {
-          this.currentPage++;
-        }
-      },
-      changeSelectedBusinessCategory(index) {
-        if (
-          this.business.options.types.length > 0 &&
-          this.business.options.types.length > this.business.type.index
-        ) {
-          this.business.type.category = this.business.options.types[
-            this.business.type.index
-          ].category;
-  
-          this.business.type.type = this.business.options.types[
-            this.business.type.index
-          ].type;
-  
-          this.business.type.icon = this.business.options.types[
-            this.business.type.index
-          ].icon;
-  
-          this.business.type.optionals = this.business.options.types[
-            this.business.type.index
-          ].optional;
-  
-          this.business.type.optionals.forEach(optional => {
-            optional.answer = null;
-          });
-        }
-      },
-      uploadLogo() {
-        var context = imagepicker.create({
-          mode: "single" // use "multiple" for multiple selection
-        });
-  
-        context
-          .authorize()
-          .then(function() {
-            return context.present();
-          })
-          .then(selection => {
-            selection.forEach(selected => {
-              // process the selected image
-              this.business.logo = selected;
-            });
-          })
-          .catch(err => {
-            // process error
-          });
+    };
+  },
+  watch: {
+    currentPage(newVal, oldVal) {
+      switch (newVal) {
+        case 0:
+          this.currentPageTitle = "General Information";
+          break;
+        case 1:
+          this.currentPageTitle = this.business.name + "`s logo";
+          break;
+        case 2:
+          this.currentPageTitle = "Verify information";
+          break;
+        default:
+          this.currentPageTitle = "";
       }
     }
-  };
+  },
+  created() {
+    this.pageLoaded();
+  },
+  mounted() {
+    this.pageLoaded();
+  },
+  methods: {
+    GoToBusiness(businessId) {
+      this.navigate("/business/home", {
+        businessID: businessId
+      });
+    },
+    pageLoaded(args) {
+      var self = this;
+      this.ApplyNavigation(self);
+      this.business.options.types = [];
+
+      this.$api
+        .getBusinessSettings()
+        .then(
+          response => {
+            this.business.options.types = response;
+            this.changeSelectedBusinessCategory(0);
+          },
+          err => {
+            dialogs.alert(e).then(() => {
+              console.log("Error occurred " + e);
+            });
+          }
+        )
+        .catch(err => {
+          this.$feedback.error({
+            title: "Server error",
+            duration: 4000,
+            message: err,
+            onTap: () => {
+              dialogs.alert("TODO : Handle the error");
+            }
+          });
+        });
+    },
+    submitBusiness() {
+      this.isLoading = true;
+
+      var connectionType = connectivity.getConnectionType();
+      if (connectionType == connectivity.connectionType.none) {
+        this.$feedback.error({
+          title: "NO INTERNET CONNECTION",
+          duration: 4000,
+          message: "Please switch on your data/wifi."
+        });
+        this.isLoading = false;
+      } else {
+        if (this.business.logo) {
+          new imageSource.ImageSource()
+            .fromAsset(this.business.logo)
+            .then(img => {
+              this.business.logo =
+                "data:image/png;base64," + img.toBase64String("png");
+              this.$api
+                .addBusiness(
+                  this.$store.state.cache.cachedAdmin._id,
+                  "ADMIN",
+                  this.business
+                )
+                .then(
+                  response => {
+                    var statusCode = response.statusCode;
+                    var result = response.content.toString();
+
+                    if (statusCode == 200) {
+                      this.savedBusiness = response.content.toString();
+
+                      this.$feedback
+                        .success({
+                          title: this.business.name + " successfully added",
+                          duration: 30000,
+                          onTap: () => {
+                            this.GoToBusiness(this.savedBusiness);
+                          }
+                        })
+                        .then(() => {});
+                    } else {
+                      this.$feedback.error({
+                        title: "Error (" + statusCode + ")",
+                        duration: 4000,
+                        message: result
+                      });
+                    }
+                    this.isLoading = false;
+                  },
+                  e => {
+                    dialogs.alert(e).then(() => {
+                      console.log("Error occurred " + e);
+                    });
+
+                    this.isLoading = false;
+                  }
+                )
+                .catch(err => {
+                  this.$feedback.error({
+                    title: "Server error",
+                    duration: 4000,
+                    message: err,
+                    onTap: () => {
+                      dialogs.alert("TODO : Handle the error");
+                    }
+                  });
+                  this.isLoading = false;
+                });
+            })
+            .catch(err => {
+              this.$feedback.error({
+                title: "Unable to upload your logo",
+                message:
+                  "Please choose another image, or go back and remove it.",
+                duration: 4000
+              });
+            });
+        } else {
+          this.$api
+            .addBusiness(
+              this.$store.state.cache.cachedAdmin._id,
+              "ADMIN",
+              this.business
+            )
+            .then(
+              response => {
+                var statusCode = response.statusCode;
+                var result = response.content.toString();
+
+                if (statusCode == 200) {
+                  this.savedBusiness = response.content.toString();
+
+                  this.$feedback
+                    .success({
+                      title: this.business.name + " successfully added",
+                      duration: 30000,
+                      onTap: () => {
+                        this.GoToBusiness(this.savedBusiness);
+                      }
+                    })
+                    .then(() => {});
+                } else {
+                  this.$feedback.error({
+                    title: "Error (" + statusCode + ")",
+                    duration: 4000,
+                    message: result
+                  });
+                }
+                this.isLoading = false;
+              },
+              e => {
+                dialogs.alert(e).then(() => {
+                  console.log("Error occurred " + e);
+                });
+
+                this.isLoading = false;
+              }
+            )
+            .catch(err => {
+              this.$feedback.error({
+                title: "Server error",
+                duration: 4000,
+                message: err,
+                onTap: () => {
+                  dialogs.alert("TODO : Handle the error");
+                }
+              });
+              this.isLoading = false;
+            });
+        }
+      }
+    },
+    canGoForward() {
+      this.txtError = "";
+      if (this.currentPage == 0) {
+        if (this.business.name.length < 2) {
+          this.txtError = "Provide a valid business name.";
+          return false;
+        } else if (this.business.type.index < 0) {
+          this.txtError =
+            "Please pick a business type, make sure you have internet connection.";
+          return false;
+        } else {
+          var fails = this.business.type.optionals
+            .filter(o => o.required && (!o.answer || o.answer.length < 2))
+            .map(o => o.requiredError);
+          if (fails && fails.length > 0) {
+            this.txtError = fails[0];
+            return false;
+          }
+        }
+        return true;
+      } else if (this.currentPage == 1) {
+        return true;
+      } else if (this.currentPage == 2) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    moveForward() {
+      if (this.canGoForward()) {
+        this.currentPage++;
+      }
+    },
+    changeSelectedBusinessCategory(index) {
+      if (
+        this.business.options.types.length > 0 &&
+        this.business.options.types.length > this.business.type.index
+      ) {
+        this.business.type.category = this.business.options.types[
+          this.business.type.index
+        ].category;
+
+        this.business.type.type = this.business.options.types[
+          this.business.type.index
+        ].type;
+
+        this.business.type.icon = this.business.options.types[
+          this.business.type.index
+        ].icon;
+
+        this.business.type.optionals = this.business.options.types[
+          this.business.type.index
+        ].optional;
+
+        this.business.type.optionals.forEach(optional => {
+          optional.answer = null;
+        });
+      }
+    },
+    uploadLogo() {
+      var context = imagepicker.create({
+        mode: "single" // use "multiple" for multiple selection
+      });
+
+      context
+        .authorize()
+        .then(function() {
+          return context.present();
+        })
+        .then(selection => {
+          selection.forEach(selected => {
+            // process the selected image
+            this.business.logo = selected;
+          });
+        })
+        .catch(err => {
+          // process error
+        });
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-  
 </style>

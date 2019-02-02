@@ -53,7 +53,7 @@
                     <Checkbox @tap="changeTransactionType('worker')" :checked="partner.type == 'worker'" boxType="circle" name="transactionType" row="1" col="1" text="Worker" class="h4"></Checkbox>
                     <Checkbox @tap="changeTransactionType('client')" :checked="partner.type == 'client'" boxType="circle" name="transactionType" row="1" col="2" text="Client" class="h4"></Checkbox>
                     <Checkbox @tap="changeTransactionType('admin')" :checked="partner.type == 'admin'" boxType="circle" name="transactionType" row="1" col="3" text="Admin" class="h4"></Checkbox>
-                    <label row="2" col="1" colSpan="2" class="h4 text-mute" :text="PartnerTypeDescription"></label>
+                    <label row="2" col="1" :textWrap="true" colSpan="3" class="h4 text-mute" :text="PartnerTypeDescription"></label>
                   </GridLayout>
   
                   <StackLayout width="100%" class="hr-light"></StackLayout>
@@ -239,14 +239,10 @@ export default {
       return Math.floor(100000 + Math.random() * 900000);
     },
     goToPartners() {
-      this.navigate(
-        "/business/partners/list",
-        {
-          businessId: this.businessId,
-          businessName: this.businessName
-        },
-        { clearHistory: true }
-      );
+      this.navigate("/business/partners/list", {
+        businessId: this.businessId,
+        businessName: this.businessName
+      });
     },
     submitPartner() {
       this.isLoading = true;
