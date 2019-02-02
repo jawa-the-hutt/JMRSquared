@@ -20,9 +20,7 @@ export default class API {
     }
 
     async handleResponse(result) {
-        if (result.statusCode == 200) {
-            return true;
-        } else if (result.statusCode == 401) {
+        if (result.statusCode == 401) {
             try {
                 appSettings.remove("UserToken");
                 var token = await this.getAuthToken();
@@ -34,8 +32,9 @@ export default class API {
                 });
                 return false;
             }
+        } else {
+            return true;
         }
-        return false;
     }
 
     getAuthToken() {
