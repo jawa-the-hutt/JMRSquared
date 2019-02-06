@@ -86,13 +86,11 @@ export default {
     }
     setTimeout(() => {
       const testing = true;
-      console.log("tag", "before");
       this.$firebase.admob
         .showBanner({
           size: this.$firebase.admob.AD_SIZE.SMART_BANNER, // see firebase.admob.AD_SIZE for all options
           margins: {
-            bottom: 10,
-            top: -1
+            bottom: 10
           },
           androidBannerId: "ca-app-pub-4924835910036108~3001656373",
           iosBannerId: "ca-app-pub-4924835910036108~3001656373",
@@ -101,14 +99,8 @@ export default {
           keywords: ["business", "money", "cash", "rich", "free", "job", "work"] // add keywords for ad targeting
         })
         .then(() => {})
-        .catch(errorMessage => {
-          dialogs.alert({
-            title: "AdMob error",
-            message: errorMessage,
-            okButtonText: "Hmmkay"
-          });
-        });
-    }, 10000);
+        .catch(errorMessage => {});
+    }, 5000);
   },
   methods: {
     pageLoaded(args = null) {

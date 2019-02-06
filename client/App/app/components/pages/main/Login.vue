@@ -1,21 +1,12 @@
 <template>
   <page class="backgroundImage" actionBarHidden="true" @loaded="pageLoaded()">
-    <GridLayout class="backgroundImageOverlay" rows="auto,*">
-      <CardView class="m-b-5" backgroundColor="transparent" row="0" textAlignment="center" shadowOpacity="0.2" shadowRadius="50" elevation="20">
-        <GridLayout class="bg-dark-blue-overlay p-y-15 p-5" rows="auto" columns="auto,*,auto">
-          <Ripple @tap="navigate('/home')" verticalAlignment="center" borderRadius="50%">
-               <Image verticalAlignment="center" width="50" height="50" class="circle" stretch="aspectFill" src="res://icon" borderRadius="50%" />
-          </Ripple>
-          <Ripple row="0" col="2" verticalAlignment="center" @tap="isEnterEmail = !isEnterEmail">
-            <Label class="text-white" verticalAlignment="center" textWrap="true" :text="isEnterEmail ? 'Use numbers' : 'Use email'"></Label>
-          </Ripple>
-          <label row="0" col="0" colSpan="3" fontSize="20%" verticalAlignment="center" textAlignment="center" class="font-weight-bold text-white text-mute" text="Login"></label>
-        </GridLayout>
-      </CardView>
-      <ScrollView row="1" width="100%">
+    <GridLayout class="backgroundImageOverlay" rows="*">
+      <ScrollView row="0" width="100%">
         <CardView verticalAlignment="center" padding="10" margin="25" elevation="10" shadowOffsetHeight="10" shadowOpacity="0.2" shadowRadius="50">
           <GridLayout width="100%">
             <FlexboxLayout class="m-10" justifyContent="space-between" width="100%" alignSelf="center" height="100%" flexDirection="column">
+  
+              <label  @tap="isEnterEmail = !isEnterEmail" fontSize="20%" verticalAlignment="center" textAlignment="center" class="font-weight-bold m-20 text-mute" text="Login"></label>
   
               <GridLayout v-show="!isEnterEmail" class="m-10" rows="auto,auto" columns="auto,*">
                 <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-10" fontSize="25%" :text="'mdi-phone' | fonticon"></label>
@@ -40,6 +31,12 @@
               <StackLayout v-show="!isLoading">
                 <Button text="Login" :isEnabled="!isLoading" class="submit-button bg-dark-blue text-white" @tap="submit()"></Button>
               </StackLayout>
+  
+              <GridLayout class="m-10">
+                <Ripple @tap="GoToRegister()">
+                  <label textAlignment="center" class="text-mute text-dark-blue p-15" fontSize="13%" text="Don't have an account? Register today."></label>
+                </Ripple>
+              </GridLayout>
   
               <GridLayout v-if="$router.current.userAuthLevel() > 0" justifyContent="flex-end" columns="*" rows="auto">
                 <Button v-if="$router.current.userAuthLevel() == 3" @tap="navigate('/admin/dashboard',null,{ clearHistory: true })" :text="'Continue as ' + $store.state.cache.cachedAdmin.userName"></Button>
@@ -84,6 +81,9 @@ export default {
     this.isLoading = false;
   },
   methods: {
+    GoToRegister() {
+      this.navigate("/register");
+    },
     pageLoaded() {
       this.$store.commit("refreshCache", {
         db: this.$db,
@@ -110,7 +110,7 @@ export default {
             this.$api
               .getAuthToken()
               .then(answer => {
-                console.log("tag", answer);
+                console.log("tag getting auth after login", answer);
                 this.loginAdmin(self, result);
                 this.isLoading = false;
                 this.navigate("/admin/dashboard", null, {
@@ -132,10 +132,11 @@ export default {
                 this.navigate("/home", null, {
                   clearHistory: true
                 });
-                console.log("err", err);
               });
           } else if (statusCode == 512) {
-            throw new Error(response.data.toString());
+            throw new Error(response.content.toString());
+          } else if (statusCode == 500) {
+            throw new Error("Internal server error");
           } else {
             throw new Error("Try again later");
           }
@@ -144,7 +145,9 @@ export default {
           if (err.message.indexOf("Failed to connect") >= 0) {
             err.message = "Please check your internet connection";
           }
-
+          if (err.message.indexOf("position") >= 0) {
+            err.message = "We are current having issues,please contact admin";
+          }
           this.$feedback.error({
             title: "Unable to log in",
             message: err.message

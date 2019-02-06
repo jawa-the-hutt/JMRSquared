@@ -216,7 +216,7 @@ export default {
       ],
       notificationPartners: [],
       notification: {
-        sendDateTime: new Date().setMinutes(new Date().getMinutes() + 10),
+        sendDateTime: new Date(),
         type: {
           index: 0,
           text: "Reminder",
@@ -379,7 +379,6 @@ export default {
     pageLoaded(args) {
       var self = this;
       this.ApplyNavigation(self);
-
       this.loadPartners();
     },
     addPartnerToNotification(partner) {

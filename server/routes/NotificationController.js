@@ -8,6 +8,7 @@ import Notification from "../models/Notification";
 import Admin from "../models/Admin";
 import Student from "../models/Student";
 import FCM from "../services/FirebaseManager";
+import helper from '../services/Helper';
 import CronJob from "../services/CronManager";
 const cronJob = new CronJob();
 
@@ -60,17 +61,14 @@ router.post("/push/notification/to/admin", function (req, res) {
   Admin.findById(adminID)
     .then(user => {
       if (user == null)
-        return res.status(514).send("User of id " + adminID + " not found");
+        return res.status(512).send("User of id " + adminID + " not found");
       var tokens = user.deviceTokens.filter(v => !v.removed).map(v => v.token);
       if (tokens) {
-        var payload = {
-          notification: notification,
-          data: {
-            link: link,
-            props: JSON.stringify(props),
-            data: JSON.stringify(data)
-          }
-        };
+        var payload = helper.makePayload(notification.title, notification.body, {
+          link: link,
+          props: props,
+          deactive: 'true'
+        });
         tokens.forEach(deviceToken => {
           FCM.sendToDevice(deviceToken, payload)
             .then(response => {})
@@ -82,11 +80,11 @@ router.post("/push/notification/to/admin", function (req, res) {
           "Notification will be sent to " + tokens.length + " devices"
         );
       } else {
-        return res.status(514).send("User has no device");
+        return res.status(512).send("User has no device");
       }
     })
     .catch(err => {
-      return res.status(514).send(err);
+      return res.status(512).send(err.message);
     });
 });
 
@@ -150,7 +148,7 @@ router.get("/get/new/for/:userId/business/:businessID", function (req, res) {
       });
       res.json(notifications);
     }).catch(err => {
-      return res.status(514).json(err.message);
+      return res.status(512).json(err.message);
     });
 });
 

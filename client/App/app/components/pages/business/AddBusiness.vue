@@ -169,33 +169,29 @@
 </template>
 
 <script>
-  const dialogs = require("ui/dialogs");
-  
-  import * as Toast from "nativescript-toast";
-  import * as LocalNotifications from "nativescript-local-notifications";
-  import * as imageSource from "tns-core-modules/image-source";
-  
-  import * as imagepicker from "nativescript-imagepicker";
-  
-  import * as connectivity from "tns-core-modules/connectivity";
-  
-  export default {
-    data() {
-      return {
-        business: {
-          name: "",
-          logo: null,
-          description: "",
-          type: {
-            icon: "",
-            type: "",
-            index: 0,
-            category: "",
-            optionals: []
-          },
-          options: {
-            types: []
-          }
+const dialogs = require("ui/dialogs");
+
+import * as Toast from "nativescript-toast";
+import * as LocalNotifications from "nativescript-local-notifications";
+import * as imageSource from "tns-core-modules/image-source";
+
+import * as imagepicker from "nativescript-imagepicker";
+
+import * as connectivity from "tns-core-modules/connectivity";
+
+export default {
+  data() {
+    return {
+      business: {
+        name: "",
+        logo: null,
+        description: "",
+        type: {
+          icon: "",
+          type: "",
+          index: 0,
+          category: "",
+          optionals: []
         },
         savedBusiness: false,
         txtError: "",
@@ -237,95 +233,112 @@
             this.currentPageTitle = "";
         }
       }
+    };
+  },
+  watch: {
+    currentPage(newVal, oldVal) {
+      switch (newVal) {
+        case 0:
+          this.currentPageTitle = "General Information";
+          break;
+        case 1:
+          this.currentPageTitle = this.business.name + "`s logo";
+          break;
+        case 2:
+          this.currentPageTitle = "Verify information";
+          break;
+        default:
+          this.currentPageTitle = "";
+      }
+    }
+  },
+  created() {
+    this.pageLoaded();
+  },
+  mounted() {
+    this.pageLoaded();
+  },
+  methods: {
+    GoToBusiness(businessId) {
+      this.navigate("/business/home", {
+        businessID: businessId
+      });
     },
-    created() {
-      this.pageLoaded();
-    },
-    mounted() {
-      this.pageLoaded();
-    },
-    methods: {
-      pageLoaded(args) {
-        var self = this;
-        this.ApplyNavigation(self);
-        this.business.options.types = [];
-  
-        this.$api
-          .getBusinessSettings()
-          .then(
-            response => {
-              this.business.options.types = response;
-              this.changeSelectedBusinessCategory(0);
-            },
-            err => {
-              dialogs.alert(e).then(() => {
-                console.log("Error occurred " + e);
-              });
-            }
-          )
-          .catch(err => {
-            this.$feedback.error({
-              title: "Server error",
-              duration: 4000,
-              message: err,
-              onTap: () => {
-                dialogs.alert("TODO : Handle the error");
-              }
+    pageLoaded(args) {
+      var self = this;
+      this.ApplyNavigation(self);
+      this.business.options.types = [];
+
+      this.$api
+        .getBusinessSettings()
+        .then(
+          response => {
+            this.business.options.types = response;
+            this.changeSelectedBusinessCategory(0);
+          },
+          err => {
+            dialogs.alert(e).then(() => {
+              console.log("Error occurred " + e);
             });
-          });
-      },
-      submitBusiness() {
-        this.isLoading = true;
-  
-        var connectionType = connectivity.getConnectionType();
-        if (connectionType == connectivity.connectionType.none) {
+          }
+        )
+        .catch(err => {
           this.$feedback.error({
-            title: "NO INTERNET CONNECTION",
+            title: "Server error",
             duration: 4000,
-            message: "Please switch on your data/wifi."
+            message: err,
+            onTap: () => {
+              dialogs.alert("TODO : Handle the error");
+            }
           });
-          this.isLoading = false;
-        } else {
-          if (this.business.logo) {
-            new imageSource.ImageSource()
-              .fromAsset(this.business.logo)
-              .then(img => {
-                this.business.logo =
-                  "data:image/png;base64," + img.toBase64String("png");
-                this.$api.addBusiness(
-                    this.$store.state.cache.cachedAdmin._id,
-                    "ADMIN",
-                    this.business
-                  )
-                  .then(
-                    response => {
-                      var statusCode = response.statusCode;
-                      var result = response.content.toString();
-  
-                      if (statusCode == 200) {
-                        this.savedBusiness = response.content.toString();
-  
-                        this.$feedback
-                          .success({
-                            title: this.business.name + " successfully added",
-                            duration: 30000,
-                            onTap: () => {
-                              this.GoToBusiness(this.savedBusiness);
-                            }
-                          })
-                          .then(() => {});
-                      } else {
-                        this.$feedback.error({
-                          title: "Error (" + statusCode + ")",
-                          duration: 4000,
-                          message: result
-                        });
-                      }
-                      this.isLoading = false;
-                    },
-                    e => {
-                      dialogs.alert(e).then(() => {
-                        console.log("Error occurred " + e);
+        });
+    },
+    submitBusiness() {
+      this.isLoading = true;
+
+      var connectionType = connectivity.getConnectionType();
+      if (connectionType == connectivity.connectionType.none) {
+        this.$feedback.error({
+          title: "NO INTERNET CONNECTION",
+          duration: 4000,
+          message: "Please switch on your data/wifi."
+        });
+        this.isLoading = false;
+      } else {
+        if (this.business.logo) {
+          new imageSource.ImageSource()
+            .fromAsset(this.business.logo)
+            .then(img => {
+              this.business.logo =
+                "data:image/png;base64," + img.toBase64String("png");
+              this.$api
+                .addBusiness(
+                  this.$store.state.cache.cachedAdmin._id,
+                  "ADMIN",
+                  this.business
+                )
+                .then(
+                  response => {
+                    var statusCode = response.statusCode;
+                    var result = response.content.toString();
+
+                    if (statusCode == 200) {
+                      this.savedBusiness = response.content.toString();
+
+                      this.$feedback
+                        .success({
+                          title: this.business.name + " successfully added",
+                          duration: 30000,
+                          onTap: () => {
+                            this.GoToBusiness(this.savedBusiness);
+                          }
+                        })
+                        .then(() => {});
+                    } else {
+                      this.$feedback.error({
+                        title: "Error (" + statusCode + ")",
+                        duration: 4000,
+                        message: result
                       });
   
                       this.isLoading = false;
@@ -350,42 +363,36 @@
                   duration: 4000
                 });
               });
-          } else {
-            this.$api
-              .addBusiness(
-                this.$store.state.cache.cachedAdmin._id,
-                "ADMIN",
-                this.business
-              )
-              .then(
-                response => {
-                  var statusCode = response.statusCode;
-                  var result = response.content.toString();
-  
-                  if (statusCode == 200) {
-                    this.savedBusiness = response.content.toString();
-  
-                    this.$feedback
-                      .success({
-                        title: this.business.name + " successfully added",
-                        duration: 30000,
-                        onTap: () => {
-                          this.GoToBusiness(this.savedBusiness);
-                        }
-                      })
-                      .then(() => {});
-                  } else {
-                    this.$feedback.error({
-                      title: "Error (" + statusCode + ")",
-                      duration: 4000,
-                      message: result
-                    });
-                  }
-                  this.isLoading = false;
-                },
-                e => {
-                  dialogs.alert(e).then(() => {
-                    console.log("Error occurred " + e);
+            });
+        } else {
+          this.$api
+            .addBusiness(
+              this.$store.state.cache.cachedAdmin._id,
+              "ADMIN",
+              this.business
+            )
+            .then(
+              response => {
+                var statusCode = response.statusCode;
+                var result = response.content.toString();
+
+                if (statusCode == 200) {
+                  this.savedBusiness = response.content.toString();
+
+                  this.$feedback
+                    .success({
+                      title: this.business.name + " successfully added",
+                      duration: 30000,
+                      onTap: () => {
+                        this.GoToBusiness(this.savedBusiness);
+                      }
+                    })
+                    .then(() => {});
+                } else {
+                  this.$feedback.error({
+                    title: "Error (" + statusCode + ")",
+                    duration: 4000,
+                    message: result
                   });
   
                   this.isLoading = false;

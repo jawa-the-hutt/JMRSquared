@@ -13,6 +13,9 @@
       "version": "5.0.0"
     }
   },
+  "scripts": {
+    "deploy": "tns run android --bundle --env.production --key-store-path release.keystore --key-store-password {PASSWORD} --key-store-alias releasealias --key-store-alias-password {PASSWORD}"
+  },
   "dependencies": {
     "moment": "^2.22.2",
     "nativescript-camera": "^4.1.1",

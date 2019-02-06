@@ -103,8 +103,7 @@ router.post("/login", function (req, res) {
       password: req.body.pass
     }).then(student => {
       if (student == null) {
-        res.status(500);
-        res.send("Incorrect log in details");
+        res.status(512).send("Incorrect log in details");
       } else {
         res.json(student);
       }
@@ -115,8 +114,7 @@ router.post("/login", function (req, res) {
       password: req.body.pass
     }).then(student => {
       if (student == null) {
-        res.status(500);
-        res.send("Incorrect log in details");
+        res.status(512).send("Incorrect log in details");
       } else {
         res.json(student);
       }

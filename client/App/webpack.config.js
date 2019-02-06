@@ -1,9 +1,15 @@
-const { relative, resolve, sep } = require("path");
+const {
+    relative,
+    resolve,
+    sep
+} = require("path");
 
 const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const {
+    BundleAnalyzerPlugin
+} = require("webpack-bundle-analyzer");
 const TerserPlugin = require('terser-webpack-plugin');
 
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
@@ -11,7 +17,9 @@ const NsVueTemplateCompiler = require("nativescript-vue-template-compiler");
 
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
-const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
+const {
+    NativeScriptWorkerPlugin
+} = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 
 module.exports = env => {
     // Add your custom Activities, Services and other android app components here.
@@ -58,6 +66,7 @@ module.exports = env => {
     const entryModule = nsWebpack.getEntryModule(appFullPath);
     const entryPath = `.${sep}${entryModule}.js`;
     console.log(`Bundling application for entryPath ${entryPath}...`);
+    console.log(`Building for ${mode}`)
 
     const config = {
         mode: mode,
@@ -156,7 +165,9 @@ module.exports = env => {
                         // Require all Android app components
                         platform === "android" && {
                             loader: "nativescript-dev-webpack/android-app-components-loader",
-                            options: { modules: appComponents },
+                            options: {
+                                modules: appComponents
+                            },
                         },
 
                         {
@@ -173,7 +184,13 @@ module.exports = env => {
                     use: [
                         'nativescript-dev-webpack/style-hot-loader',
                         'nativescript-dev-webpack/apply-css-loader.js',
-                        { loader: "css-loader", options: { minimize: false, url: false } },
+                        {
+                            loader: "css-loader",
+                            options: {
+                                minimize: false,
+                                url: false
+                            }
+                        },
                     ],
                 },
                 {
@@ -181,7 +198,13 @@ module.exports = env => {
                     use: [
                         'nativescript-dev-webpack/style-hot-loader',
                         'nativescript-dev-webpack/apply-css-loader.js',
-                        { loader: "css-loader", options: { minimize: false, url: false } },
+                        {
+                            loader: "css-loader",
+                            options: {
+                                minimize: false,
+                                url: false
+                            }
+                        },
                         "sass-loader",
                     ],
                 },
@@ -216,11 +239,18 @@ module.exports = env => {
                 context: projectRoot,
             }]),
             // Copy assets to out dir. Add your own globs as needed.
-            new CopyWebpackPlugin([
-                { from: "fonts/**" },
-                { from: "**/*.+(jpg|png)" },
-                { from: "assets/**/*" },
-            ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
+            new CopyWebpackPlugin([{
+                    from: "fonts/**"
+                },
+                {
+                    from: "**/*.+(jpg|png)"
+                },
+                {
+                    from: "assets/**/*"
+                },
+            ], {
+                ignore: [`${relative(appPath, appResourcesFullPath)}/**`]
+            }),
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
                 "./vendor",

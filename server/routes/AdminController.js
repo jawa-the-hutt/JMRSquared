@@ -67,15 +67,13 @@ router.get("/GetById/:adminID", function (req, res) {
         .populate(["notifications"])
         .then(admin => {
             if (admin == null) {
-                res.status(500);
-                res.send("Invalid user");
+                res.status(512).send("Invalid user");
             } else {
                 res.json(admin);
             }
         })
         .catch(err => {
-            res.status(500);
-            res.send("Unable to log you in");
+            res.status(512).send("Unable to log you in");
         });
 });
 
@@ -89,8 +87,7 @@ router.post("/login", auth.disabled, (req, res, next) => {
             .populate(["notifications"])
             .then(admin => {
                 if (admin == null) {
-                    res.status(500);
-                    res.send("Incorrect log in details");
+                    res.status(512).send("Incorrect log in details");
                 } else {
                     res.json(admin);
                 }
@@ -104,8 +101,7 @@ router.post("/login", auth.disabled, (req, res, next) => {
             .populate(["notifications"])
             .then(admin => {
                 if (admin == null) {
-                    res.status(500);
-                    res.send("Incorrect log in details");
+                    res.status(512).send("Incorrect log in details");
                 } else {
                     res.json(admin);
                 }
@@ -211,8 +207,7 @@ router.get("/bug/get/:bugId", function (req, res) {
     var bugID = req.params.bugId;
     Bug.findById(bugID).then(bug => {
         if (bug == null) {
-            res.status(500);
-            res.send("Invalid request");
+            res.status(512).send("Invalid request");
         } else {
             res.json(bug);
         }
@@ -222,8 +217,7 @@ router.get("/bug/get/:bugId", function (req, res) {
 router.get("/bug/all", function (req, res) {
     Bug.find({}, "_id senderName senderPic bugText date").then(bugs => {
         if (bugs == null) {
-            res.status(500);
-            res.send("Error : 9032rtu834g9erbo");
+            res.status(512).send("Error : 9032rtu834g9erbo");
         }
         bugs.reverse();
         res.json(bugs);
@@ -240,8 +234,7 @@ router.post("/bug/add", function (req, res) {
 
     bug.save(function (err) {
         if (err) {
-            res.status(500);
-            res.send(err);
+            res.status(512).send(err);
         }
         res.send("Bug added successfully saved");
     });
@@ -251,8 +244,7 @@ router.get("/document/get/:documentId", function (req, res) {
     var documentID = req.params.documentId;
     Document.findById(documentID).then(document => {
         if (document == null) {
-            res.status(500);
-            res.send("Invalid request");
+            res.status(512).send("Invalid request");
         } else {
             res.json(document);
         }
@@ -262,8 +254,7 @@ router.get("/document/get/:documentId", function (req, res) {
 router.get("/document/all", function (req, res) {
     Document.find({}, "_id title description type date").then(documents => {
         if (documents == null) {
-            res.status(500);
-            res.send("Error : 9032rtu834g9erbo");
+            res.status(512).send("Error : 9032rtu834g9erbo");
         }
         documents.reverse();
         res.json(documents);
@@ -283,8 +274,7 @@ router.post("/document/add", function (req, res) {
 
     document.save(function (err) {
         if (err) {
-            res.status(500);
-            res.send(err);
+            res.status(512).send(err);
         }
         res.send("Document added successfully saved");
     });
@@ -306,15 +296,13 @@ router.get("/transaction/all", function (req, res) {
         .populate("adminID", "userName")
         .then(transactions => {
             if (transactions == null) {
-                res.status(500);
-                res.send("Error : 9032rtu834g9erbo");
+                res.status(512).send("Error : 9032rtu834g9erbo");
             }
             transactions.reverse();
             res.json(transactions);
         })
         .catch(err => {
-            res.status(500);
-            res.send("Error : " + err.message);
+            res.status(512).send("Error : " + err.message);
         });
 });
 
@@ -329,8 +317,7 @@ router.get("/transaction/:source/all", function (req, res) {
         .populate("adminID", "userName")
         .then(transactions => {
             if (transactions == null) {
-                res.status(500);
-                res.send("Error : 9032rtu834g9erbo");
+                res.status(512).send("Error : 9032rtu834g9erbo");
             }
             transactions.reverse();
             res.json(transactions);
