@@ -363,8 +363,7 @@ router.post("/transactions/for/business/:businessId", auth.required, (req, res, 
         .populate("client", "userName")
         .then(transactions => {
             if (transactions == null) {
-                res.status(500);
-                res.send("Error : 9032rtu834g9erbo");
+                res.status(512).send("Error : 9032rtu834g9erbo");
             }
             res.json(transactions);
         })
