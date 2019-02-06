@@ -135,6 +135,8 @@ export default {
               });
           } else if (statusCode == 512) {
             throw new Error(response.content.toString());
+          } else if (statusCode == 500) {
+            throw new Error("Internal server error");
           } else {
             throw new Error("Try again later");
           }
@@ -143,7 +145,9 @@ export default {
           if (err.message.indexOf("Failed to connect") >= 0) {
             err.message = "Please check your internet connection";
           }
-
+          if (err.message.indexOf("position") >= 0) {
+            err.message = "We are current having issues,please contact admin";
+          }
           this.$feedback.error({
             title: "Unable to log in",
             message: err.message

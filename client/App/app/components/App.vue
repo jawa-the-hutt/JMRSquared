@@ -1,9 +1,12 @@
 <template>
-  <GridLayout rows="auto,*">
-    <StackLayout row="0" class="bg-light-red" v-show="connectionType == 0">
+  <GridLayout rows="auto,auto,*" columns="*,auto">
+    <StackLayout colSpan="2" row="0" class="bg-light-red" v-show="connectionType == 0">
       <label class="text-white p-5" fontSize="15" textAlignment="center" text="offline"></label>
     </StackLayout>
-    <Navigator row="1" :defaultRoute="this.$router.current.userAuthLevel() < 1 ? currentPage : adminDashboard" />
+     <StackLayout col="1" row="1" class="bg-light-red p-x-15 ribbon ribbon-top-right" textAlignment="right" v-if="TNS_ENV !== 'production'">
+      <label class="text-white p-x-15 m-x-10 span" textAlignment="center" fontSize="15" text="Demo"></label>
+    </StackLayout>
+    <Navigator colSpan="2" row="1" rowSpan="2" :defaultRoute="this.$router.current.userAuthLevel() < 1 ? currentPage : adminDashboard" />
   </GridLayout>
 </template>
 
@@ -47,4 +50,11 @@ export default {
 </script>
 
 <style>
+.ribbon {
+  transform: rotate(45deg);
+  margin-top: 20;
+  margin-right: -35;
+  z-index: 10;
+  overflow: hidden;
+}
 </style>

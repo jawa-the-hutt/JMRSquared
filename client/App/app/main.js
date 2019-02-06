@@ -70,6 +70,7 @@ Vue.prototype.$approx = master.approximateNumber;
 Vue.prototype.appSettings = master.appSettings;
 Vue.prototype.$firebase = master.firebase;
 Vue.prototype.$api = master.http;
+Vue.prototype.TNS_ENV = TNS_ENV;
 
 import router from "./services/router";
 import Navigator from "nativescript-vue-navigator";
@@ -93,7 +94,6 @@ Vue.mixin({
   beforeCreate() {
     if (!this.$route) {
       this.$route = this.$navigator.route;
-      //this.$route.meta.userAuthLevel = 0;
     }
     if (!this.$firebase || !this.$firebase.initialized) {
       master
