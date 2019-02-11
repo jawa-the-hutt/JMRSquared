@@ -72,6 +72,12 @@ router.get("/get/:business/for/:userid", auth.required, (req, res, next) => {
                         date: new Date(),
                         values: currentTargets
                     };
+                    if (returnedBusiness.settings) {
+                        function onlyUnique(value, index, self) {
+                            return self.indexOf(value) === index;
+                        }
+                        returnedBusiness.settings = returnedBusiness.settings.filter(onlyUnique);
+                    }
                     return res.json(returnedBusiness);
                 })
                 .catch(err => {
@@ -106,7 +112,7 @@ router.post("/set/business/:type", auth.required, (req, res, next) => {
                 business.settings.find(s => s._id == settingID).value = value;
 
                 business.markModified("settings");
-                business.save(function (err) {
+                business.save(function(err) {
                     if (err) return res.status(512).send(err);
                     res.send("Business setting successfully saved");
                 });
@@ -133,7 +139,7 @@ router.post("/set/business/:type", auth.required, (req, res, next) => {
                 business.targets.find(t => t._id == targetID).enable = enable;
 
                 business.markModified("targets");
-                business.save(function (err) {
+                business.save(function(err) {
                     if (err) return res.status(512).send(err);
                     res.send("Business targets successfully saved");
                 });
@@ -159,7 +165,7 @@ router.post("/set/business/:type", auth.required, (req, res, next) => {
                     business.categories.push(value);
                 }
 
-                business.save(function (err) {
+                business.save(function(err) {
                     if (err) return res.status(512).send(err);
                     res.send(`Business ${type} successfully saved`);
                 });
@@ -290,7 +296,7 @@ router.post("/add/business", auth.required, (req, res, next) => {
             if (!business.name) {
                 return res.status(512).send("A business name is required");
             }
-            business.save(function (err) {
+            business.save(function(err) {
                 if (err) return res.status(512).send(err);
                 cronJob.populateBusinessSettings();
                 cronJob.populateBusinessTargets();
@@ -332,7 +338,7 @@ router.post("/assign/to/business", auth.required, (req, res, next) => {
                     assignedBY: assignedBY,
                     authority: adminAuthority && adminAuthority.toUpperCase()
                 });
-                business.save(function (err) {
+                business.save(function(err) {
                     if (err) return res.status(512).send(err);
                     res.send("Client successfully linked to business");
                 });
@@ -387,7 +393,7 @@ router.get("/get/transaction/:transactionID", auth.required, (req, res, next) =>
         });
 });
 
-router.post("/transaction/add", auth.required, async (req, res, next) => {
+router.post("/transaction/add", auth.required, async(req, res, next) => {
     var transaction = new Transaction({
         _id: mongoose.Types.ObjectId(),
         adminID: req.body.adminID, //ForeignKey
@@ -421,7 +427,7 @@ router.post("/transaction/add", auth.required, async (req, res, next) => {
         !business.categories.find(v => v == transaction.category)
     ) {
         business.categories.push(transaction.category);
-        business.save(function (err) {
+        business.save(function(err) {
             if (err) {
                 return res
                     .status(512)
@@ -443,7 +449,7 @@ router.post("/transaction/add", auth.required, async (req, res, next) => {
         }
     }
 
-    transaction.save(function (err) {
+    transaction.save(function(err) {
         if (err) return res.status(512).send(err);
         // TODO : Notify the other admins about this transaction.
         if (business && business.admin) {
