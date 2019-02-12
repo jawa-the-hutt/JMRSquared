@@ -8,11 +8,11 @@
         <CardView row="0" elevation="15">
           <GridLayout columns="auto,*,auto" class="bg-dark-blue p-10">
             <Ripple @tap="navigate(null)" verticalAlignment="center" borderRadius="50%">
-              <Label verticalAlignment="center" textAlignment="center" class="mdi text-white p-5" fontSize="25%" :text="'mdi-arrow-left' | fonticon"></Label>
+              <Label verticalAlignment="center" textAlignment="center" class="mdi text-white p-5" fontSize="30%" :text="'mdi-arrow-left' | fonticon"></Label>
             </Ripple>
             <label class="p-x-15 text-white" verticalAlignment="center" fontSize="18%" col="1" text="Transaction detail"></label>
             <Ripple v-if="transaction" col="2" @tap="shareImage(transaction)" verticalAlignment="center" borderRadius="50%">
-              <Label verticalAlignment="center" textAlignment="center" class="mdi text-white p-5" fontSize="25%" :text="'mdi-share-variant' | fonticon"></Label>
+              <Label verticalAlignment="center" textAlignment="center" class="mdi text-white p-5" fontSize="30%" :text="'mdi-share-variant' | fonticon"></Label>
             </Ripple>
           </GridLayout>
         </CardView>
@@ -25,7 +25,7 @@
             <label class="p-b-5" row="2" col="0" text="Category"></label>
             <label class="p-b-5" row="2" col="1" :text="transaction.category"></label>
             <label class="p-b-5" row="3" col="0" text="Amount"></label>
-            <label class="p-b-5" row="3" col="1" :text="`R${transaction.amount}`"></label>
+            <label class="p-b-5" row="3" col="1" :class="{'text-dark-blue':transaction.type == 'MONEYIN','text-light-red':transaction.type == 'MONEYOUT'}"  :text="(transaction.type == 'MONEYIN' ? '+ R' : '- R') + transaction.amount"></label>
             <label class="p-b-5" v-if="transaction.description" row="4" col="0" text="Description"></label>
             <label class="p-b-5" v-if="transaction.description" :textWrap="true" row="4" col="1" :text="transaction.description"></label>
             <label class="p-b-5" row="5" col="0" text="Uploaded by"></label>

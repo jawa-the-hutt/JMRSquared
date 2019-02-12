@@ -4,7 +4,7 @@
       <CardView row="0" elevation="15">
         <GridLayout rows="auto,auto" columns="auto,*" class="bg-dark-blue p-10">
           <Ripple rowSpan="2" @tap="navigate(null)" verticalAlignment="center" borderRadius="50%">
-            <Label verticalAlignment="center" textAlignment="center" class="mdi text-white p-5" fontSize="25%" :text="'mdi-arrow-left' | fonticon"></Label>
+            <Label verticalAlignment="center" textAlignment="center" class="mdi text-white p-5" fontSize="30%" :text="'mdi-arrow-left' | fonticon"></Label>
           </Ripple>
           <label class="p-x-15 text-white" fontSize="18%" col="1" text="Expenses"></label>
           <label row="1" class="p-x-15 text-white" verticalAlignment="center" fontSize="13%" col="1" :text="`Any known expense that ${businessName} pays`"></label>
