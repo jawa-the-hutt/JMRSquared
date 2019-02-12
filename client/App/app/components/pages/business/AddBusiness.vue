@@ -18,7 +18,6 @@
       </StackLayout>
       <ScrollView row="1">
         <FlexboxLayout flexDirection="column" justifyContent="center" width="100%">
-          <!-- PAGE 0 -->
           <StackLayout v-show="currentPage == 0">
             <CardView margin="10" elevation="10" radius="10" shadowOffsetHeight="10" shadowOpacity="0.2" shadowRadius="50">
               <ScrollView>
@@ -246,8 +245,8 @@ export default {
   },
   methods: {
     GoToBusiness(businessId) {
-      this.navigate("/business/home", {
-        businessID: businessId
+      this.navigate("/admin/dashboard", null, {
+        clearHistory: true
       });
     },
     pageLoaded(args) {

@@ -85,12 +85,12 @@ export default {
       this.pageLoaded();
     }
     setTimeout(() => {
-      const testing = true;
+      const testing = this.TNS_ENV !== "production";
       this.$firebase.admob
         .showBanner({
           size: this.$firebase.admob.AD_SIZE.SMART_BANNER, // see firebase.admob.AD_SIZE for all options
           margins: {
-            bottom: 10
+            top: 10
           },
           androidBannerId: "ca-app-pub-4924835910036108~3001656373",
           iosBannerId: "ca-app-pub-4924835910036108~3001656373",

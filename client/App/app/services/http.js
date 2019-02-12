@@ -229,9 +229,10 @@ export default class API {
                     duration: 4000,
                     message: "Data loaded might not be recent."
                 });
-                let business = store.state.cache.cachedFullBusiness.filter(
+                let _businesses = store.state.cache.cachedFullBusiness.filter(
                     b => b._id == businessID
-                )[0];
+                );
+                let business = _businesses[_businesses.length - 1];
                 if (!business) {
                     store.commit("refreshCache", {
                         db: this.master.couchDB,
@@ -239,9 +240,10 @@ export default class API {
                         api: this,
                         doc: "business"
                     });
-                    business = store.state.cache.cachedFullBusiness.filter(
+                    _businesses = store.state.cache.cachedFullBusiness.filter(
                         b => b._id == businessID
-                    )[0];
+                    );
+                    business = _businesses[_businesses.length - 1];
                     if (!business) {
                         reject(new Error("You have no internet connection."));
                     }

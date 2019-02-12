@@ -8,7 +8,7 @@
           </Ripple>
           <Image v-if="business.logo" row="0" rowSpan="2" col="2" verticalAlignment="center" width="70" height="70" class="circle p-5" stretch="aspectFill" :src="business.logo" borderRadius="50%" />
           <Ripple v-if="!business.logo" row="0" rowSpan="2" col="2" width="70" height="70" verticalAlignment="center" borderRadius="50%">
-            <Label verticalAlignment="center" textAlignment="center" class="mdi" fontSize="35%" :text="'mdi-image-filter-center-focus' | fonticon"></Label>
+            <Label verticalAlignment="center" textAlignment="center" class="mdi" fontSize="35%" :text="'mdi-camera' | fonticon"></Label>
           </Ripple>
           <label row="0" col="0" colSpan="3" fontSize="18%" verticalAlignment="bottom" textAlignment="center" class="font-weight-bold text-white text-mute" :text="business.name"></label>
           <Label row="1" col="0" colSpan="3" fontSize="15%" verticalAlignment="center" textAlignment="center" class="text-white" :textWrap="true" text="Transactions"></Label>
@@ -25,8 +25,9 @@
       <PullToRefresh row="2" rowSpan="2" @refresh="refreshList($event)">
         <ScrollView>
           <StackLayout>
-          <ActivityIndicator verticalAlignment="center" textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>
-            <CardView v-if="!isLoading" v-for="(transaction,i) in transactions.filter(t => transactionShowing == 'All' || (transactionShowing == 'Expenses' && t.type == 'MONEYOUT') || (transactionShowing == 'Incomes' && t.type == 'MONEYIN'))" :key="i" radius="5" margin="1" elevation="0">
+            <ActivityIndicator verticalAlignment="center" textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>
+            <CardView v-if="!isLoading" v-for="(transaction,i) in transactions.filter(t => transactionShowing == 'All' || (transactionShowing == 'Expenses' && t.type == 'MONEYOUT') || (transactionShowing == 'Incomes' && t.type == 'MONEYIN'))" :key="i" radius="5"
+              margin="1" elevation="0">
               <Ripple @tap="goToTransaction(transaction._id)" class="m-x-5">
                 <GridLayout class="m-15" rows="auto,auto,auto" columns="auto,*,auto">
                   <label row="0" col="0" class="font-weight-bold text-mute p-x-5" :text="transaction.category"></label>
@@ -127,10 +128,8 @@ export default {
       this.navigate("/business/add/transaction", {
         businessId: this.business._id,
         businessName: this.business.name,
-        businessSettings: this.business.settings ? this.business.settings : [],
-        businessCategories: this.business.categories
-          ? this.business.categories
-          : [],
+        businessSettings: this.business.settings,
+        businessCategories: this.business.categories,
         businessClients: this.business.admin
           ? this.business.admin
               .filter(v => v.authority != "ADMIN" && v.id)

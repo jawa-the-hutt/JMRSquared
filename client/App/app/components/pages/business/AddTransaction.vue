@@ -9,7 +9,7 @@
                 <label class="h3" text="Adding a transaction for : "></label>
                 <label class="h3 m-l-20" :text="businessName"></label>
               </StackLayout>
-              <Button row="0" col="1" @tap="navigate(null,true)" selfAlign="right" text="Cancel"></Button>
+              <Button col="1" @tap="navigate(null,true)" selfAlign="right" text="Cancel"></Button>
             </GridLayout>
           </StackLayout>
         </CardView>
@@ -118,7 +118,7 @@
                   </GridLayout>
                   <StackLayout width="100%" class="hr-light"></StackLayout>
   
-                  <Ripple v-if="businessSettings.filter(t => t.title == 'Transaction evidence').length > 0" @tap="uploadEvidence()">
+                  <Ripple v-show="settings.some(t => t.title == 'Proof of payment')" @tap="uploadEvidence()">
                     <GridLayout class="m-10" rows="auto,auto,*" columns="auto,*">
                       <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-file-document' | fonticon"></label>
                       <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Evidence"></label>
@@ -126,7 +126,7 @@
                       <Image row="2" col="1" v-show="selectedImage" :src="selectedImage" stretch="aspectFill" width="90%" />
                     </GridLayout>
                   </Ripple>
-                  <StackLayout v-if="businessSettings.filter(t => t.title == 'Transaction evidence').length > 0" width="100%" class="hr-light"></StackLayout>
+                  <StackLayout v-show="settings.some(t => t.title == 'Proof of payment')" width="100%" class="hr-light"></StackLayout>
                 </StackLayout>
               </ScrollView>
             </CardView>
@@ -243,6 +243,7 @@ export default {
       Amount: "",
       clients: [],
       categories: [],
+      settings: [],
       hasImage: false,
       selectedImage: null,
       selectedType: "All",
@@ -345,11 +346,8 @@ export default {
       }
     }
   },
-  created() {
-    this.pageLoaded();
-  },
   mounted() {
-    this.pageLoaded();
+    this.pageLoaded(null);
   },
   methods: {
     GoTo(link, props) {
@@ -376,6 +374,8 @@ export default {
       this.ApplyNavigation(self);
       this.clients = this.businessClients;
       this.categories = this.businessCategories;
+      this.settings = Array.from(this.businessSettings);
+
       if (this.categories && this.categories.length > 0) {
         this.transaction.category = this.categories[0];
       }
@@ -403,8 +403,7 @@ export default {
         }
 
         if (
-          this.businessSettings.filter(t => t.title == "Transaction evidence")
-            .length > 0 &&
+          this.settings.some(t => t.title == "Proof of payment") &&
           !this.selectedImage
         ) {
           this.txtError = "Please upload a proof of your transaction.";
@@ -458,7 +457,15 @@ export default {
               title: response.content.toString(),
               duration: 4000,
               onTap: () => {
-                this.GoTo('/business/home',{businessID:this.businessId},{clearHistory: true});
+                this.GoTo(
+                  "/business/home",
+                  {
+                    businessID: this.businessId
+                  },
+                  {
+                    clearHistory: true
+                  }
+                );
               }
             });
             this.savedTransaction = true;
@@ -491,14 +498,14 @@ export default {
       var self = this;
       this.$showModal({
         template: ` 
-                                                                                                            <Page>
-                                                                                                                <GridLayout rows="auto,*,auto" columns="*" width="100%" height="60%">
-                                                                                                                    <Label row="0" class="h3 m-5" :textWrap="true" textAlignment="center" text="When must the notification be sent?"></Label>
-                                                                                                                    <DatePicker verticalAlignment="center" row="1" v-model="selectedDueDate" />
-                                                                                                                    <Label row="2" class="mdi h1 m-5" @tap="changeDueRent($modal)" textAlignment="center" :text="'mdi-check' | fonticon"></Label>
-                                                                                                                </GridLayout>
-                                                                                                            </Page>
-                                                                                                            `,
+                                                                                                                          <Page>
+                                                                                                                              <GridLayout rows="auto,*,auto" columns="*" width="100%" height="60%">
+                                                                                                                                  <Label row="0" class="h3 m-5" :textWrap="true" textAlignment="center" text="When must the notification be sent?"></Label>
+                                                                                                                                  <DatePicker verticalAlignment="center" row="1" v-model="selectedDueDate" />
+                                                                                                                                  <Label row="2" class="mdi h1 m-5" @tap="changeDueRent($modal)" textAlignment="center" :text="'mdi-check' | fonticon"></Label>
+                                                                                                                              </GridLayout>
+                                                                                                                          </Page>
+                                                                                                                          `,
         data: function() {
           return {
             selectedDueDate: new Date()
@@ -522,12 +529,13 @@ export default {
     },
     uploadEvidence() {
       if (
-        this.businessSettings.filter(
-          t => t.title == "Transaction invoice source"
-        ).length > 0 &&
-        this.businessSettings.filter(
-          t => t.title == "Transaction invoice source"
-        )[0].value
+        this.settings.some(
+          s =>
+            s.title == "Proof of payment" &&
+            s.value &&
+            s.additionals &&
+            s.additionals.some(v => v.value == "Scan using app")
+        )
       ) {
         camera
           .requestPermissions()
