@@ -8,7 +8,7 @@
           </Ripple>
           <Image v-if="business.logo" row="0" rowSpan="2" col="2" verticalAlignment="center" width="70" height="70" class="circle p-5" stretch="aspectFill" :src="business.logo" borderRadius="50%" />
           <Ripple v-if="!business.logo" row="0" rowSpan="2" col="2" width="70" height="70" verticalAlignment="center" borderRadius="50%">
-            <Label verticalAlignment="center" textAlignment="center" class="mdi" fontSize="35%" :text="'mdi-image-filter-center-focus' | fonticon"></Label>
+            <Label verticalAlignment="center" textAlignment="center" class="mdi" fontSize="35%" :text="'mdi-camera' | fonticon"></Label>
           </Ripple>
           <label row="0" col="0" colSpan="3" fontSize="18%" verticalAlignment="bottom" textAlignment="center" class="font-weight-bold text-white text-mute" :text="business.name"></label>
           <Label row="1" col="0" colSpan="3" fontSize="15%" verticalAlignment="center" textAlignment="center" class="text-white" :textWrap="true" text="Settings"></Label>
@@ -41,19 +41,31 @@
             <GridLayout v-if="settings.length > 0" class="m-10" rows="auto" columns="*,auto">
               <label row="0" col="0" class="h3 font-weight-bold text-mute text-dark-blue" text="Settings"></label>
             </GridLayout>
-            <StackLayout>
-              <GridLayout class="m-10" rows="auto,auto" columns="auto,*,auto" v-for="(setting,i) in settings" :key="i">
+            
+            <StackLayout v-for="(setting,i) in settings" :key="i">
+              <GridLayout class="m-10" rows="auto,auto" columns="auto,*,auto">
                 <Label row="0" rowSpan="2" col="0" fontSize="25%" verticalAlignment="center" borderRadius="50%" textAlignment="center" class="h2 mdi" :text="'mdi-' + setting.icon | fonticon"></Label>
                 <label row="0" col="1" class="p-x-15 h3 font-weight-bold text-mute" :text="setting.title"></label>
                 <label row="1" col="1" :textWrap="true" class="p-x-15 h4 text-mute" :text="setting.description"></label>
                 <switch row="0" rowSpan="2" col="2" @checkedChange="changeSetting($event,setting.value,setting._id)" :checked="setting.value"></switch>
               </GridLayout>
+  
+              <StackLayout v-if="setting.additionals">
+                <GridLayout v-show="setting.value" class="m-10" rows="auto,auto" columns="auto,*" v-for="(additional,a) in setting.additionals" :key="a">
+                  <Label row="0" rowSpan="2" col="0" fontSize="25%" verticalAlignment="center" borderRadius="50%" textAlignment="center" class="h2 mdi" :text="'mdi-' + additional.icon | fonticon"></Label>
+                  <label row="0" col="1" class="p-x-15 h3 font-weight-bold text-mute" :text="additional.description"></label>
+                  <StackLayout :textWrap="true" orientation="horizontal" row="1" col="1">
+                    <CheckBox class="p-x-15" name="circleToggle" boxType="circle" :textWrap="true" :key="c" v-for="(current,c) in additional.options" @tap="changeSetting(additional,current,additional._id,true)" :text="current" :checked="additional.value == current"></CheckBox>
+                  </StackLayout>
+                </GridLayout>
+              </StackLayout>
             </StackLayout>
   
             <StackLayout v-if="targets.length > 0" width="100%" class="hr-light"></StackLayout>
             <GridLayout v-if="targets.length > 0" class="m-10" rows="auto" columns="*,auto">
               <label row="0" col="0" class="h3 font-weight-bold text-mute text-dark-blue" text="Targets"></label>
-            </GridLayout>
+            </GridLayout> 
+
             <StackLayout>
               <GridLayout class="m-10" rows="auto,auto" columns="auto,*,auto,auto" v-for="(target,i) in targets" :key="i">
                 <Label row="0" rowSpan="2" col="0" fontSize="25%" verticalAlignment="center" borderRadius="50%" textAlignment="center" class="h2 mdi" :text="'mdi-' + target.icon | fonticon"></Label>
@@ -91,51 +103,54 @@ export default {
     };
   },
   mounted() {
-    this.options = [];
-    this.options.push({
-      title: "Partners",
-      text: `List of ${this.business.name} partners`,
-      link: `/business/partners/list`,
-      props: {
-        businessId: this.business._id,
-        businessName: this.business.name
-      },
-      icon: "worker"
-    });
-    this.options.push({
-      title: "Expenses",
-      text: `Expenses of the business`,
-      link: `/business/expenses/list`,
-      props: {
-        businessId: this.business._id,
-        businessName: this.business.name
-      },
-      icon: "trending-down"
-    });
-
-    this.options.push({
-      title: "Income",
-      text: `Income streams of the business`,
-      link: `/business/income/list`,
-      props: {
-        businessId: this.business._id,
-        businessName: this.business.name
-      },
-      icon: "trending-up"
-    });
-
-    this.targets = JSON.parse(
-      JSON.stringify(
-        this.business.targets.map(t => {
-          t.defaultValue = t.value;
-          return t;
-        })
-      )
-    );
-    this.settings = JSON.parse(JSON.stringify(this.business.settings));
+    this.pageLoaded();
   },
   props: ["business"],
   methods: {
+    pageLoaded() {
+      this.options = [];
+      this.options.push({
+        title: "Partners",
+        text: `List of ${this.business.name} partners`,
+        link: `/business/partners/list`,
+        props: {
+          businessId: this.business._id,
+          businessName: this.business.name
+        },
+        icon: "worker"
+      });
+      this.options.push({
+        title: "Expenses",
+        text: `Expenses of the business`,
+        link: `/business/expenses/list`,
+        props: {
+          businessId: this.business._id,
+          businessName: this.business.name
+        },
+        icon: "trending-down"
+      });
+
+      this.options.push({
+        title: "Income",
+        text: `Income streams of the business`,
+        link: `/business/income/list`,
+        props: {
+          businessId: this.business._id,
+          businessName: this.business.name
+        },
+        icon: "trending-up"
+      });
+
+      this.targets = JSON.parse(
+        JSON.stringify(
+          this.business.targets.map(t => {
+            t.defaultValue = t.value;
+            return t;
+          })
+        )
+      );
+      this.settings = JSON.parse(JSON.stringify(this.business.settings));
+    },
     changeTarget(target) {
       // This is an empty enabled
       if (target.enable && !target.value) {
@@ -151,10 +166,18 @@ export default {
         .then(changedBusinessTarget => {
           this.targets.find(t => t._id == target._id).defaultValue =
             target.value;
-          this.$forceUpdate();
           this.$feedback.success({
-            title: "Your changes are saved."
+            title: "Your changes are saved.",
+            message: target.value
           });
+          this.$emit(
+            "changeBusiness",
+            this.targets.map(t => {
+              t.value = t.defaultValue;
+              return t;
+            }),
+            "target"
+          );
         })
         .catch(err => {
           this.$feedback.error({
@@ -162,23 +185,57 @@ export default {
             duration: 4000,
             message: err.message
           });
+          this.targets = JSON.parse(
+            JSON.stringify(
+              this.business.targets.map(t => {
+                t.defaultValue = t.value;
+                return t;
+              })
+            )
+          );
         });
     },
-    changeSetting(event, value, settingsID) {
+    changeSetting(event, value, settingsID, isAdditional = false) {
       if (event.value != value) {
+        if (isAdditional) {
+          event.value = value;
+        }
         this.$api
-          .changeBusinessSettings(this.business._id, settingsID, event.value)
+          .changeBusinessSettings(
+            this.business._id,
+            settingsID,
+            isAdditional ? value : event.value
+          )
           .then(changedBusinessSettings => {
             this.$feedback.success({
               title: "Your changes are saved."
             });
+            if (!isAdditional) {
+              this.settings.forEach(element => {
+                if (element._id == settingsID) {
+                  element.value = event.value;
+                }
+              });
+            } else {
+              this.settings
+                .filter(s => s.additionals)
+                .forEach(setting => {
+                  setting.additionals.forEach(addi => {
+                    if (addi._id == settingsID) {
+                      addi.value = event.value;
+                    }
+                  });
+                });
+            }
+            this.$emit("changeBusiness", this.settings, "setting");
           })
           .catch(err => {
             this.$feedback.error({
               title: "Unable to save your change.",
               duration: 4000,
-              message: "You have to be connected to the internet"
+              message: err.message
             });
+            this.settings = JSON.parse(JSON.stringify(this.business.settings));
           });
       }
     },
