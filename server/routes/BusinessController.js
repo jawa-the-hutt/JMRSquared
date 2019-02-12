@@ -113,8 +113,10 @@ router.post("/set/business/:type", auth.required, (req, res, next) => {
                     business.settings.find(s => s._id == settingID).value = value
                     business.markModified("settings");
                 } else if (business.settings.some(s => s.additionals && s.additionals.some(v => v._id == settingID))) {
-                    business.settings.find(s => s.additionals).additionals.find(s => s.additionals.some(v => v._id == settingID)).value = value;
-                    business.markModified("settings.additionals");
+                    business.settings.forEach(s => {
+                        s.additionals.find(v => v._id == settingID).value = value;
+                    })
+                    business.markModified("settings");
                 } else {
                     return res.status(512).send("Setting not changed, try again later.");
                 }
