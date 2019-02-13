@@ -10,6 +10,8 @@ import Student from "../models/Student";
 import FCM from "../services/FirebaseManager";
 import helper from '../services/Helper';
 import CronJob from "../services/CronManager";
+import SMSProvider from "../services/SMSProvider"
+const smsProvider = new SMSProvider();
 const cronJob = new CronJob();
 
 /*
@@ -43,6 +45,24 @@ router.post("/test/push/notification", function (req, res) {
     .catch(err => {
       return res.status(512).send(err);
     });
+});
+
+router.post("/test/sms/notification", async (req, res) => {
+  var numbers = req.body.numbers;
+  var message = req.body.message;
+  try {
+    var smsResponse = await smsProvider.sendSMS(numbers, message);
+    if (smsResponse) {
+      return res.send("Sms successfully sent to " + numbers);
+    } else {
+      throw new Error('Try again later.');
+    }
+  } catch (err) {
+    return res.status(512).json({
+      "message": "Unable to send SMS",
+      "response": err
+    });
+  }
 });
 
 router.post("/push/notification/to/admin", function (req, res) {
