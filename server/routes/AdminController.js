@@ -139,7 +139,7 @@ router.post("/login", auth.disabled, (req, res, next) => {
 });
 
 router.post("/add", async (req, res) => {
-    const admin = new Admin({
+    let admin = new Admin({
         _id: new mongoose.Types.ObjectId(),
         email: req.body.email,
         pass: req.body.pass,
@@ -151,7 +151,7 @@ router.post("/add", async (req, res) => {
 
     if (req.body.partnerID) {
         var _admin = await Admin.findById(req.body.partnerID);
-        if (_admin != null) {
+        if (_admin) {
             admin = _admin;
         }
     }
