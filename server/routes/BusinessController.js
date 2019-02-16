@@ -203,7 +203,7 @@ router.get("/get/all/:type/for/:business", auth.required, (req, res, next) => {
                         .status(512)
                         .send("The requested business is not avaliable");
                 if (!business.admin) res.json([]);
-                var partners = business.admin.toObject().map(b => b.id);
+                var partners = business.admin.toObject().map(b => b.id).filter(b => b && b._id);
 
                 for (const partner of partners) {
                     var transaction = await Transaction.findOne({
