@@ -11,7 +11,7 @@
             </GridLayout>
           </StackLayout>
         </CardView>
-        <Progress :value="(currentPage + 1) * 50"></Progress>
+        <Progress :value="(currentPage * 50)"></Progress>
       </StackLayout>
       <ScrollView row="1">
         <FlexboxLayout flexDirection="column" justifyContent="center" width="100%">
@@ -21,30 +21,55 @@
               <ScrollView>
                 <StackLayout>
   
-                  <label class="m-10 t-10 font-italic text-light-blue" textAlignment="center" :textWrap="true" verticalAlignment="center" text="Please enter your partner's details below and proceed."></label>
+                  <label class="m-10 font-weight-bold text-light-blue" textAlignment="center" :textWrap="true" verticalAlignment="center" text="Please enter your partner's details below and proceed."></label>
+  
+                  <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
+                    <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-phone' | fonticon"></label>
+                    <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Contact numbers"></label>
+                    <TextField v-model="partner.contactNumbers" returnKeyType="next" keyboardType="number" row="1" col="1" class="h4" hint="e.g 0760487292"></TextField>
+                  </GridLayout>
+  
+                  <label class="m-10 t-15" textAlignment="center" :textWrap="true" verticalAlignment="center" text="We will scan through our database to find you partner, if he does not exist, you will be able to register them and they will get an SMS with thier login details"></label>
+  
+                  <StackLayout width="100%" class="hr-light"></StackLayout>
+                </StackLayout>
+              </ScrollView>
+            </CardView>
+          </StackLayout>
+          <StackLayout v-show="currentPage == 1">
+            <CardView margin="10" elevation="10" radius="10" shadowOffsetHeight="10" shadowOpacity="0.2" shadowRadius="50">
+              <ScrollView>
+                <StackLayout>
+  
+                  <label v-show="partnerExists" class="m-10 t-10 font-italic text-light-blue" textAlignment="center" :textWrap="true" verticalAlignment="center" text="Please enter your partner's details below and proceed."></label>
+                  <label v-show="!partnerExists" class="m-10 t-10 font-italic text-light-blue" textAlignment="center" :textWrap="true" verticalAlignment="center" :text="`${partner.fullName} exists in the system as ${partner.userName} , Fill in the missing details and proceed`"></label>
   
                   <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-account-circle' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Username *"></label>
-                    <TextField v-model="partner.username" returnKeyType="next" row="1" col="1" class="h4" hint="e.g Joe"></TextField>
+                    <label v-show="partnerExists" row="1" col="1" class="h4 font-weight-bold text-mute" :text="partner.username"></label>
+                    <TextField v-show="!partnerExists" v-model="partner.username" returnKeyType="next" row="1" col="1" class="h4" hint="e.g Joe"></TextField>
                   </GridLayout>
   
                   <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-phone' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Contact numbers *"></label>
-                    <TextField v-model="partner.contactNumbers" returnKeyType="next" keyboardType="number" row="1" col="1" class="h4" hint="e.g 0760487292"></TextField>
+                    <label v-show="partnerExists" row="1" col="1" class="h4 font-weight-bold text-mute" :text="partner.contactNumbers"></label>
+                    <TextField v-show="!partnerExists" v-model="partner.contactNumbers" returnKeyType="next" keyboardType="number" row="1" col="1" class="h4" hint="e.g 0760487292"></TextField>
                   </GridLayout>
   
                   <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-email' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Email"></label>
-                    <TextView v-model="partner.email" returnKeyType="next" keyboardType="email" row="1" col="1" class="h4" hint="e.g mulavhe@gmail.com"></TextView>
+                    <label v-show="partnerExists" row="1" col="1" class="h4 font-weight-bold text-mute" :text="partner.email"></label>
+                    <TextView v-show="!partnerExists" v-model="partner.email" returnKeyType="next" keyboardType="email" row="1" col="1" class="h4" hint="e.g mulavhe@gmail.com"></TextView>
                   </GridLayout>
   
                   <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-account-card-details' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Full name"></label>
-                    <TextView v-model="partner.fullName" returnKeyType="done" row="1" col="1" class="h4" hint="e.g Sirwali Joseph"></TextView>
+                    <label v-show="partnerExists" row="1" col="1" class="h4 font-weight-bold text-mute" :text="partner.fullName"></label>
+                    <TextView v-show="!partnerExists" v-model="partner.fullName" returnKeyType="done" row="1" col="1" class="h4" hint="e.g Sirwali Joseph"></TextView>
                   </GridLayout>
   
                   <GridLayout class="m-10" rows="auto,auto,auto" columns="auto,*,*,*">
@@ -61,7 +86,7 @@
               </ScrollView>
             </CardView>
           </StackLayout>
-          <StackLayout v-show="currentPage == 1">
+          <StackLayout v-show="currentPage == 2">
             <CardView margin="10" elevation="10" radius="10" shadowOffsetHeight="10" shadowOpacity="0.2" shadowRadius="50">
               <ScrollView>
                 <StackLayout>
@@ -114,9 +139,9 @@
             <FlexboxLayout v-show="!isLoading" flexDirection="column" alignContent="flex-end" justifyContent="flex-end" width="100%">
               <GridLayout v-show="!savedPartner" rows="auto,auto" columns="*,*">
                 <Label row="0" colSpan="2" :text="txtError.length < 2 ? '' :txtError" textWrap="true" :class="`text-mute text-light-${txtError.length < 2 ? 'blue' : 'red'}`" textAlignment="center"></Label>
-                <Button row="1" col="1" @tap="submitPartner()" v-show="currentPage == 1" class="btn-primary bg-light-green" :text="`Save ${partner.username}`"></Button>
+                <Button row="1" col="1" @tap="submitPartner()" v-show="currentPage == 2" class="btn-primary bg-light-green" :text="`Save ${partner.username}`"></Button>
                 <Button row="1" col="0" @tap="currentPage--" v-show="currentPage > 0" :isEnabled="currentPage > 0" class="btn-primary bg-light-red" text="back"></Button>
-                <Button row="1" col="1" @tap="moveForward()" v-show="currentPage != 1" class="btn-primary bg-light-blue" text="proceed"></Button>
+                <Button row="1" col="1" @tap="moveForward()" v-show="currentPage != 2" class="btn-primary bg-light-blue" text="proceed"></Button>
               </GridLayout>
               <GridLayout v-show="savedPartner" rows="auto,auto" columns="*">
                 <Label row="0" text="Partner successfully added!" textWrap="true" class="text-mute text-light-blue" textAlignment="center"></Label>
@@ -153,6 +178,7 @@ export default {
         fullName: "",
         type: "worker"
       },
+      partnerExists: true,
       business: {
         name: "",
         logo: null,
@@ -195,19 +221,19 @@ export default {
   watch: {
     currentPage(newVal, oldVal) {
       switch (newVal) {
-        case 0:
-          this.currentPageTitle = "Adding a partner for ";
+        case 1:
+          this.currentPageTitle = "Link a partner to the system";
           break;
         case 1:
+          this.currentPageTitle = "Adding a partner for ";
+          break;
+        case 2:
           this.currentPageTitle = "Verify information";
           break;
         default:
           this.currentPageTitle = "";
       }
     }
-  },
-  created() {
-    this.pageLoaded();
   },
   mounted() {
     this.pageLoaded();
@@ -230,6 +256,7 @@ export default {
         this.partner.type = type;
       }
     },
+
     pageLoaded(args) {
       this.currentPage = 0;
       var self = this;
@@ -304,9 +331,40 @@ export default {
           });
       }
     },
-    canGoForward() {
+    async canGoForward() {
       this.txtError = "";
       if (this.currentPage == 0) {
+        if (
+          isNaN(this.partner.contactNumbers) ||
+          this.partner.contactNumbers.toString().length < 10 ||
+          this.partner.contactNumbers.toString().length > 13
+        ) {
+          this.txtError = "Please provide valid contact numbers.";
+          return false;
+        } else {
+          try {
+            var user = await this.$api.getAdminByContactnumbers(
+              this.partner.contactNumbers
+            );
+            if (!user) {
+              this.partnerExists = false;
+            } else {
+              this.partnerExists = true;
+              this.partner._id = user._id;
+              this.partner.fullName = user.fullName;
+              this.partner.userName = user.userName;
+              this.partner.email = user.email;
+            }
+            this.isLoading = false;
+            return true;
+          } catch (err) {
+            console.log(err);
+            this.txtError = err.message;
+            this.isLoading = false;
+            return false;
+          }
+        }
+      } else if (this.currentPage == 1) {
         if (this.partner.username.length < 2) {
           this.txtError = "Provide a valid partner username.";
           return false;
@@ -319,7 +377,7 @@ export default {
           return false;
         }
         return true;
-      } else if (this.currentPage == 1) {
+      } else if (this.currentPage == 2) {
         return true;
       } else {
         return false;
