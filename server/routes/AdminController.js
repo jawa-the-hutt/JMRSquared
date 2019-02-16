@@ -71,6 +71,10 @@ router.get(
     auth.required,
     (req, res, next) => {
         var contactNumbers = req.params.contactNumbers;
+        contactNumbers = Number(contactNumbers);
+        if (!contactNumbers) {
+            contactNumbers = req.params.contactNumbers;
+        }
         Admin.findOne({
                     numbers: contactNumbers
                 },
