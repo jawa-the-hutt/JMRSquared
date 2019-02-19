@@ -56,18 +56,18 @@ export default class helper {
     static GetTransactionProfitAndRevenue(transactions, maxMonths = 5, maxWeeks = 3, maxDays = 3) {
         var revenues = [];
         if (!transactions) transactions = [];
+        if (!revenues.some(v => v.key == 'overall')) {
+            revenues.push({
+                key: 'overall',
+                revenue: 0,
+                profit: 0,
+                title: 'Overall',
+                type: 'Overall'
+            });
+        }
         transactions.filter(v => moment(v.date).isValid() && !isNaN(v.amount)).forEach(value => {
             // Calculate the overrall profit
             if (true) {
-                if (!revenues.some(v => v.key == 'overall')) {
-                    revenues.push({
-                        key: 'overall',
-                        revenue: 0,
-                        profit: 0,
-                        title: 'Overall',
-                        type: 'Overall'
-                    });
-                }
                 revenues.filter(v => v.key == 'overall').map(v => {
                     if (value.type == "MONEYIN") {
                         v.revenue += Number(value.amount);
