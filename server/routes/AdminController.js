@@ -179,6 +179,14 @@ router.post("/add", async (req, res) => {
                             .status(512)
                             .send("User is saved, but can't link to a business");
                     if (!business.admin.some(v => v.id == admin._id)) {
+                        var payload = helper.makePayload(`${business.name} got a new ${admin.role}`, `${admin.userName} is added as a ${admin.role} for ${business.name}`, {
+                            link: `/profile/view`,
+                            props: admin._id,
+                            deactive: 'true'
+                        });
+                        business.admin.forEach(bb => {
+                            FCM.sendToUser(bb._id, payload);
+                        });
                         business.admin.push({
                             id: admin._id,
                             assignedBY: req.body.adminID,
