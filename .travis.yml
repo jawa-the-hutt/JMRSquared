@@ -22,6 +22,10 @@ before_deploy:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: bash ".travis/deploy.sh" $USERNAME $PASSWORD $ADDRESS $PORT ./bash.sh
+    script:
+      - sshpass -p $PASSWORD rsync --progress -av --dry-run --update --quiet -e "ssh -p$PORT" ./server/* $USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev/server
+      - sshpass -p $PASSWORD rsync --progress -av --update -e "ssh -p$PORT" ./server/* $USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev/server
+      - sshpass -p $PASSWORD ssh -p $PORT $USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev/ 'bash -s' < bash "./bash.sh"
+    # bash ".travis/deploy.sh" $USERNAME $PASSWORD $ADDRESS $PORT ./bash.sh
     on:
       branch: develop
