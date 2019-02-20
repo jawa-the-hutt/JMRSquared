@@ -14,9 +14,13 @@
           <Label row="1" col="0" colSpan="3" fontSize="15%" verticalAlignment="center" textAlignment="center" class="text-white" :textWrap="true" text="Settings"></Label>
         </GridLayout>
       </CardView>
-      <CardView row="1" margin="10" elevation="5">
+      <CardView row="1" margin="2" elevation="5">
         <ScrollView>
           <StackLayout>
+             <GridLayout v-if="settings.length > 0" class="m-10" rows="auto" columns="*,auto">
+              <label row="0" col="0" class="h3 font-weight-bold text-mute text-dark-blue" text="Manage"></label>
+            </GridLayout>
+            
             <Ripple v-for="(option,i) in options" :key="i" @tap="GoTo(option)">
               <GridLayout class="p-10" rows="auto,auto" columns="auto,*">
                 <Label row="0" rowSpan="2" col="0" fontSize="25%" verticalAlignment="center" borderRadius="50%" textAlignment="center" class="h2 mdi" :text="'mdi-' + option.icon | fonticon"></Label>
@@ -54,7 +58,7 @@
                 <GridLayout v-show="setting.value" class="m-10" rows="auto,auto" columns="auto,*" v-for="(additional,a) in setting.additionals" :key="a">
                   <Label row="0" rowSpan="2" col="0" fontSize="25%" verticalAlignment="center" borderRadius="50%" textAlignment="center" class="h2 mdi" :text="'mdi-' + additional.icon | fonticon"></Label>
                   <label row="0" col="1" class="p-x-15 h3 font-weight-bold text-mute" :text="additional.description"></label>
-                  <StackLayout :textWrap="true" orientation="horizontal" row="1" col="1">
+                  <StackLayout class="p-x-15" :textWrap="true" orientation="horizontal" row="1" col="1">
                     <CheckBox class="p-x-15" name="circleToggle" boxType="circle" :textWrap="true" :key="c" v-for="(current,c) in additional.options" @tap="changeSetting(additional,current,additional._id,true)" :text="current" :checked="additional.value == current"></CheckBox>
                   </StackLayout>
                 </GridLayout>
@@ -110,8 +114,8 @@ export default {
     pageLoaded() {
       this.options = [];
       this.options.push({
-        title: "Partners",
-        text: `List of ${this.business.name} partners`,
+        title: "Partners (clients/workers)",
+        text: `List of ${this.business.name} clients and workers`,
         link: `/business/partners/list`,
         props: {
           businessId: this.business._id,

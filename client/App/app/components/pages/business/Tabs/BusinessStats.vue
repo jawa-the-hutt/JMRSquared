@@ -13,7 +13,7 @@
         <Label row="1" col="0" colSpan="3" fontSize="15%" verticalAlignment="center" textAlignment="center" class="text-white" :textWrap="true" text="Statistics"></Label>
       </GridLayout>
     </CardView>
-    <CardView row="1" verticalAlignment="center" margin="15" elevation="15" ref="bottomSheet" :visibility="isBottomSheetOpen ? 'visible' : 'collapse'">
+    <CardView row="1" verticalAlignment="center" margin="2" elevation="15" ref="bottomSheet" :visibility="isBottomSheetOpen ? 'visible' : 'collapse'">
       <StackLayout class="m-x-15 m-y-5">
         <GridLayout rows="auto" textAlignment="right" columns="auto,*,auto">
           <Ripple col="0" textAlignment="left">
@@ -25,7 +25,12 @@
           </Ripple>
         </GridLayout>
         <StackLayout verticalAlignment="bottom" row="2" colSpan="3" width="100%" class="hr-light m-t-15"></StackLayout>
-        <GridLayout v-for="(summary,i) in summaryStats" :key="i" class="p-15" rows="auto,auto,auto" columns="*,*,*">
+        <StackLayout class="p-x-15 p-5 text-dark-black" v-show="summaryStats.length == 0 && !isLoading" row="2" verticalAlignment="center">
+          <label textAlignment="center" class="mdi p-5" fontSize="50%" :text="'mdi-finance' | fonticon"></label>
+          <label textAlignment="center" class="font-weight-bold text-dark-black p-5" fontSize="22%" :textWrap="true" text="No statistics!"></label>
+          <label textAlignment="center" class="text-light-black p-5" fontSize="18%" :textWrap="true" text="You do not have any statistics due to no transactions"></label>
+        </StackLayout>
+        <GridLayout v-show="summaryStats.length > 0" v-for="(summary,i) in summaryStats" :key="i" class="p-15" rows="auto,auto,auto" columns="*,*,*">
           <label row="0" rowSpan="2" col="0" :textWrap="true" class="font-weight-bold" verticalAlignment="center" textAlignment="center" :text="summary.title"></label>
           <label row="0" col="1" class="font-weight-bold" textAlignment="center" text="Profit"></label>
           <label row="1" col="1" class="font-weight-bold text-dark-blue summaryStats" :text="`R${summary.profit}`" :class="{'visible':true}" fontSize="15%" vertialAlignment="center" textAlignment="center"></label>

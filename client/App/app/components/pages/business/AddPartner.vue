@@ -16,7 +16,7 @@
       <ScrollView row="1">
         <FlexboxLayout flexDirection="column" justifyContent="center" width="100%">
           <!-- PAGE 0 -->
-          <StackLayout v-show="currentPage == 0">
+          <StackLayout v-if="currentPage == 0">
             <CardView margin="10" elevation="10" radius="10" shadowOffsetHeight="10" shadowOpacity="0.2" shadowRadius="50">
               <ScrollView>
                 <StackLayout>
@@ -41,10 +41,9 @@
               <ScrollView>
                 <StackLayout>
   
-                  <label v-show="partnerExists" class="m-10 t-10 font-italic text-light-blue" textAlignment="center" :textWrap="true" verticalAlignment="center" text="Please enter your partner's details below and proceed."></label>
-                  <label v-show="!partnerExists" class="m-10 t-10 font-italic text-light-blue" textAlignment="center" :textWrap="true" verticalAlignment="center" :text="`${partner.fullName} exists in the system as ${partner.userName} , Fill in the missing details and proceed`"></label>
+                  <label v-show="!partnerExists" class="m-10 t-15 text-dark-blue" textAlignment="center" :textWrap="true" verticalAlignment="center" text="Enter your partner's details and proceed."></label>
   
-                  <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
+                  <GridLayout v-show="!partnerExists || partner.username" class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-account-circle' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Username *"></label>
                     <label v-show="partnerExists" row="1" col="1" class="h4 font-weight-bold text-mute" :text="partner.username"></label>
@@ -58,11 +57,10 @@
                     <TextField v-show="!partnerExists" v-model="partner.contactNumbers" returnKeyType="next" keyboardType="number" row="1" col="1" class="h4" hint="e.g 0760487292"></TextField>
                   </GridLayout>
   
-                  <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
+                  <GridLayout v-show="!partnerExists" class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-email' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Email"></label>
-                    <label v-show="partnerExists" row="1" col="1" class="h4 font-weight-bold text-mute" :text="partner.email"></label>
-                    <TextView v-show="!partnerExists" v-model="partner.email" returnKeyType="next" keyboardType="email" row="1" col="1" class="h4" hint="e.g mulavhe@gmail.com"></TextView>
+                    <TextView v-model="partner.email" returnKeyType="next" keyboardType="email" row="1" col="1" class="h4" hint="e.g mulavhe@gmail.com"></TextView>
                   </GridLayout>
   
                   <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
@@ -71,6 +69,7 @@
                     <label v-show="partnerExists" row="1" col="1" class="h4 font-weight-bold text-mute" :text="partner.fullName"></label>
                     <TextView v-show="!partnerExists" v-model="partner.fullName" returnKeyType="done" row="1" col="1" class="h4" hint="e.g Sirwali Joseph"></TextView>
                   </GridLayout>
+                  <label v-show="partnerExists" class="m-10 t-15 text-dark-blue" textAlignment="center" :textWrap="true" verticalAlignment="center" text="Fill in the missing details and proceed."></label>
   
                   <GridLayout class="m-10" rows="auto,auto,auto" columns="auto,*,*,*">
                     <label row="0" rowSpan="3" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-google-circles-communities' | fonticon"></label>
@@ -97,25 +96,25 @@
                     <label row="0" col="0" class="h3 font-weight-bold text-mute text-dark-blue" text="Partner's information"></label>
                   </GridLayout>
   
-                  <GridLayout v-show="partner.username.length > 2" class="m-10" rows="auto,auto" columns="auto,*">
+                  <GridLayout v-show="partner.username && partner.username.length > 2" class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-account-circle' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Username *"></label>
                     <label :text="partner.username" row="1" col="1" class="h4"></label>
                   </GridLayout>
   
-                  <GridLayout v-show="partner.contactNumbers.toString().length > 2" class="m-10" rows="auto,auto" columns="auto,*">
+                  <GridLayout v-show="partner.contactNumbers && partner.contactNumbers.toString().length > 2" class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-phone' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Contact numbers *"></label>
                     <label :text="partner.contactNumbers" row="1" col="1" class="h4"></label>
                   </GridLayout>
   
-                  <GridLayout v-show="partner.email.length > 2" class="m-10" rows="auto,auto" columns="auto,*">
+                  <GridLayout v-show="partner.email && partner.email.length > 2" class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-email' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Email"></label>
                     <label :text="partner.email" row="1" col="1" class="h4"></label>
                   </GridLayout>
   
-                  <GridLayout v-show="partner.fullName.length > 2" class="m-10" rows="auto,auto" columns="auto,*">
+                  <GridLayout v-show="partner.fullName && partner.fullName.length > 2" class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-account-card-details' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Full name"></label>
                     <label :text="partner.fullName" row="1" col="1" class="h4"></label>
@@ -172,6 +171,7 @@ export default {
   data() {
     return {
       partner: {
+        _id: null,
         username: "",
         contactNumbers: "",
         email: "",
@@ -222,7 +222,7 @@ export default {
     currentPage(newVal, oldVal) {
       switch (newVal) {
         case 1:
-          this.currentPageTitle = "Link a partner to the system";
+          this.currentPageTitle = "Link a partner to";
           break;
         case 1:
           this.currentPageTitle = "Adding a partner for ";
@@ -291,6 +291,7 @@ export default {
             this.partner.type.toUpperCase(),
             this.partner.username,
             this.partner.fullName,
+            this.partner._id,
             this.businessId,
             this.$store.state.cache.cachedAdmin._id
           )
@@ -352,7 +353,7 @@ export default {
               this.partnerExists = true;
               this.partner._id = user._id;
               this.partner.fullName = user.fullName;
-              this.partner.userName = user.userName;
+              this.partner.username = user.userName;
               this.partner.email = user.email;
             }
             this.isLoading = false;
@@ -367,13 +368,6 @@ export default {
       } else if (this.currentPage == 1) {
         if (this.partner.username.length < 2) {
           this.txtError = "Provide a valid partner username.";
-          return false;
-        } else if (
-          isNaN(this.partner.contactNumbers) ||
-          this.partner.contactNumbers.toString().length < 10 ||
-          this.partner.contactNumbers.toString().length > 13
-        ) {
-          this.txtError = "Please provide valid partner contact numbers.";
           return false;
         }
         return true;

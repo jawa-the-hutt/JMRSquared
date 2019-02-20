@@ -2,9 +2,14 @@
   <page backgroundSpanUnderStatusBar actionBarHidden="true">
     <GridLayout @swipe="SegmentedBarSwipe" v-if="business && currentTab > -1" rows="*,auto" columns="*">
       <component row="0" class="enterAnimation" @changeTab="changeTabByChild" @changeBusiness="changeBusiness(business)" :business="business" :is="tabs[currentTab].view"></component>
-      <SegmentedBar v-show="business" :class="{'visible':business}" row="1" #tabs borderColor="$blueDarkColor" class="mdi businessIcon" backgroundColor="transparent" selectedBackgroundColor="#0093a4" v-model="currentTab">
-        <SegmentedBarItem v-for="(tab,i) in tabs" :key="i" :class="{'text-dark-blue':i == currentTab}" @tap="currentTab = i" style="font-size:25%" :title="tab.icon | fonticon"></SegmentedBarItem>
-      </SegmentedBar>
+      <BottomNavigation class="businessIcon" :class="{'visible':business}" @tabSelected="onBottomNavigationTabSelected" :selectedTabIndex="currentTab" titleVisibility="always" activeColor="#0093a4" inactiveColor="black" backgroundColor="transparent" row="1">
+        <BottomNavigationTab v-for="(tab,i) in tabs" :key="i" :title="tab.text" :icon="tab.icon" />
+      </BottomNavigation>
+      <!--  
+        <SegmentedBar row="1" #tabs borderColor="$blueDarkColor" backgroundColor="transparent" selectedBackgroundColor="#0093a4" v-model="currentTab">
+          <SegmentedBarItem  v-for="(tab,i) in tabs" :key="i" class="mdi" @tap="currentTab = i" style="font-size:25%" :title="tab.icon | fonticon"></SegmentedBarItem>
+        </SegmentedBar>
+      -->
     </GridLayout>
     <GridLayout v-show="!business" rows="*" columns="*">
       <ActivityIndicator v-if="!business" verticalAlignment="center" textAlignment="center" :busy="!business"></ActivityIndicator>
@@ -37,10 +42,10 @@ export default {
   },
   data() {
     return {
-      count: 20,
       currentTab: -1,
       business: null,
-      isLoaded: false
+      isLoaded: false,
+      tabs: []
     };
   },
   mounted() {
@@ -50,6 +55,9 @@ export default {
   },
   props: ["businessID"],
   methods: {
+    onBottomNavigationTabSelected(event) {
+      this.currentTab = event.newIndex;
+    },
     pageLoaded(destination = null) {
       this.$api
         .getBusiness(this.businessID, this.$store.state.cache.cachedAdmin._id)
@@ -65,7 +73,7 @@ export default {
           if (this.business.currentAuth.authority == "WORKER") {
             this.tabs.push({
               text: "Notifications",
-              icon: "mdi-bell",
+              icon: "ic_bell_black_24dp",
               view: "BusinessNotifications"
             });
           }
@@ -73,26 +81,24 @@ export default {
             case "ADMIN":
               this.tabs.push({
                 text: "Notifications",
-                icon: this.business.type.icon
-                  ? "mdi-" + this.business.type.icon
-                  : "mdi-home",
+                icon: "ic_home_black_24dp",
                 view: "BusinessProfile"
               });
               this.tabs.push({
                 text: "Settings",
-                icon: "mdi-briefcase-edit",
+                icon: "ic_settings_black_24dp",
                 view: "BusinessSettings"
               });
 
             case "WORKER":
               this.tabs.push({
                 text: "Transactions",
-                icon: "mdi-receipt",
+                icon: "ic_receipt_black_24dp",
                 view: "BusinessTransactions"
               });
               this.tabs.push({
                 text: "Stats",
-                icon: "mdi-finance",
+                icon: "ic_finance_black_24dp",
                 view: "BusinessStats"
               });
               this.currentTab = 0;
@@ -106,7 +112,9 @@ export default {
               if (this.$router.current.userAuthLevel() >= 1) {
                 goToRoute = "/admin/dashboard";
               }
-              this.navigate(goToRoute, null, { clearHistory: true });
+              this.navigate(goToRoute, null, {
+                clearHistory: true
+              });
               this.tabs = [];
               return;
           }
@@ -190,5 +198,9 @@ export default {
       opacity: 1;
     }
   }
+}
+
+.nav-item::after {
+  content: "joe";
 }
 </style>

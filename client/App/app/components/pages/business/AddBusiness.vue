@@ -16,29 +16,36 @@
         </CardView>
         <Progress :value="(currentPage) * 50"></Progress>
       </StackLayout>
-      <ScrollView row="1">
+      <ActivityIndicator verticalAlignment="center" textAlignment="center" row="1" v-if="business.options.types.length == 0" :busy="true"></ActivityIndicator>
+      <ScrollView v-if="business.options.types.length > 0" row="1">
         <FlexboxLayout flexDirection="column" justifyContent="center" width="100%">
           <StackLayout v-show="currentPage == 0">
-            <CardView margin="10" elevation="10" radius="10" shadowOffsetHeight="10" shadowOpacity="0.2" shadowRadius="50">
+            <CardView elevation="10" radius="10" shadowOffsetHeight="10" shadowOpacity="0.2" shadowRadius="50">
               <ScrollView>
                 <StackLayout>
   
                   <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-domain' | fonticon"></label>
-                    <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Business name *"></label>
+                    <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Business name"></label>
                     <TextField returnKeyType="next" v-model="business.name" row="1" col="1" class="h4" hint="e.g JMRSquared"></TextField>
                   </GridLayout>
   
                   <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" col="0" verticalAlignment="top" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-briefcase' | fonticon"></label>
-                    <label row="0" col="1" verticalAlignment="center" class="h3 font-weight-bold text-mute" text="Business Type *"></label>
+                    <label row="0" col="1" verticalAlignment="center" class="h3 font-weight-bold text-mute" text="Business Type"></label>
                     <ListPicker row="1" col="0" colSpan="2" @selectedIndexChange="changeSelectedBusinessCategory" :items="business.options.types.map(t => t.type)" v-model="business.type.index" />
                   </GridLayout>
                   <StackLayout width="100%" class="hr-light"></StackLayout>
   
-                  <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
+                  <GridLayout v-show="business.type.index && !business.options.types[business.type.index].category" class="m-10" rows="auto,auto" columns="auto,*">
+                    <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-domain' | fonticon"></label>
+                    <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Business type"></label>
+                    <TextField returnKeyType="next" v-model="businessType" row="1" col="1" class="h4" hint="e.g Property"></TextField>
+                  </GridLayout>
+  
+                  <GridLayout v-show="business.type.index && business.options.types[business.type.index].category" class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-' + business.type.icon | fonticon"></label>
-                    <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Business Category *"></label>
+                    <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Business Category"></label>
                     <label :text="business.type.category" row="1" col="1" class="h4"></label>
                   </GridLayout>
   
@@ -112,11 +119,6 @@
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Business Category"></label>
                     <label :text="business.type.category" row="1" col="1" class="h4"></label>
                   </GridLayout>
-                  <StackLayout width="100%" class="hr-light"></StackLayout>
-  
-                  <GridLayout class="m-10" rows="auto" columns="*,auto">
-                    <label row="0" col="0" class="h3 font-weight-bold text-mute text-dark-blue" text="Optional information"></label>
-                  </GridLayout>
   
                   <GridLayout v-show="business.description.length != 0" class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-message-bulleted' | fonticon"></label>
@@ -181,6 +183,7 @@ import * as connectivity from "tns-core-modules/connectivity";
 export default {
   data() {
     return {
+      businessType: null,
       business: {
         name: "",
         logo: null,
@@ -259,6 +262,12 @@ export default {
         .then(
           response => {
             this.business.options.types = response;
+            this.business.options.types.push({
+              icon: "domain",
+              type: "Other",
+              category: null,
+              optionals: []
+            });
             this.changeSelectedBusinessCategory(0);
           },
           err => {
@@ -421,17 +430,34 @@ export default {
           this.txtError =
             "Please pick a business type, make sure you have internet connection.";
           return false;
+        } else if (
+          !this.business.options.types[this.business.type.index].category &&
+          (!this.businessType ||
+            (this.businessType && this.businessType.length < 3))
+        ) {
+          this.txtError = "Enter a valid business type";
+          return false;
         } else {
-          var fails = this.business.type.optionals
-            .filter(o => o.required && (!o.answer || o.answer.length < 2))
-            .map(o => o.requiredError);
-          if (fails && fails.length > 0) {
-            this.txtError = fails[0];
-            return false;
+          if (this.business.type && this.business.type.optionals) {
+            var fails = this.business.type.optionals
+              .filter(o => o.required && (!o.answer || o.answer.length < 2))
+              .map(o => o.requiredError);
+            if (fails && fails.length > 0) {
+              this.txtError = fails[0];
+              return false;
+            }
           }
         }
         return true;
       } else if (this.currentPage == 1) {
+        if (!this.business.options.types[this.business.type.index].category) {
+          this.business.type = {
+            icon: "domain",
+            type: this.businessType,
+            index: this.business.type.index,
+            category: "Custom"
+          };
+        }
         return true;
       } else if (this.currentPage == 2) {
         return true;
@@ -465,9 +491,11 @@ export default {
           this.business.type.index
         ].optional;
 
-        this.business.type.optionals.forEach(optional => {
-          optional.answer = null;
-        });
+        if (this.business.type && this.business.type.optionals) {
+          this.business.type.optionals.forEach(optional => {
+            optional.answer = null;
+          });
+        }
       }
     },
     uploadLogo() {

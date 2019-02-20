@@ -14,7 +14,7 @@
       </GridLayout>
     </CardView>
     <StackLayout class="p-x-15" row="1">
-      <CardView margin="5" elevation="10">
+      <CardView margin="2" elevation="10">
         <GridLayout rows="auto,auto,auto,*,auto" columns="*,*,*">
           <ActivityIndicator v-if="!Notifications" col="0" colSpan="3" textAlignment="center" verticalAlignment="center" :busy="!Notifications"></ActivityIndicator>
           <PullToRefresh col="0" colSpan="3" @refresh="refreshList($event)">
@@ -26,7 +26,7 @@
                       <label row="0" rowSpan="3" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-' + notification.icon | fonticon"></label>
                       <label row="0" col="1" class="h3 font-weight-bold text-mute" :text="notification.title"></label>
                       <label row="1" col="1" :textWrap="true" class="h4" :text="notification.body"></label>
-                      <Label row="2" col="2" verticalAlignment="center" class="h4 text-mute p-x-5" textAlignment="right" :text="getMoment(notification.date).fromNow()"></Label>
+                      <Label row="2" col="2" v-if="selectedNotification != i" verticalAlignment="center" class="h4 text-mute p-x-5" textAlignment="right" :text="getMoment(notification.date).fromNow()"></Label>
                     </GridLayout>
                   </Ripple>
                   <StackLayout verticalAlignment="center" textAlignment="center" row="0" col="1" v-if="selectedNotification == i">

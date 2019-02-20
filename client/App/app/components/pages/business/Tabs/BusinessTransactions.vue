@@ -15,19 +15,23 @@
         </GridLayout>
       </CardView>
   
-      <CardView row="1" class="p-15" textAlignment="right" verticalAlignment="center" radius="5" margin="15" elevation="5">
+      <CardView v-show="transactions.length > 0" row="1" class="p-15" textAlignment="right" verticalAlignment="center" radius="5" margin="15" elevation="5">
         <Ripple @tap="changeTransactionShowing">
           <label class="p-10" textAlignment="right" :text="`Showing : ${transactionShowing}`"></label>
         </Ripple>
       </CardView>
-  
+
       <Fab row="2" @tap="goToAddTransaction" icon="res://ic_add_white_24dp" class="fab-button fixedBtn"></Fab>
-      <PullToRefresh row="2" rowSpan="2" @refresh="refreshList($event)">
+      <StackLayout class="p-x-15 p-5 text-dark-black" v-show="transactions.length == 0 && !isLoading" row="2" verticalAlignment="center">
+        <label textAlignment="center" class="mdi p-5" fontSize="50%" :text="'mdi-receipt' | fonticon"></label>
+        <label textAlignment="center" class="font-weight-bold text-dark-black p-5" fontSize="25%" :textWrap="true" text="No transactions yet!"></label>
+        <label textAlignment="center" class="text-light-black p-5" fontSize="20%" :textWrap="true" text="Hit the + button to add your first transaction"></label>
+      </StackLayout>
+      <PullToRefresh v-show="transactions.length > 0" row="2" rowSpan="2" @refresh="refreshList($event)">
         <ScrollView>
-          <StackLayout>
+          <StackLayout v-show="transactions.length > 0">
             <ActivityIndicator verticalAlignment="center" textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>
-            <CardView v-if="!isLoading" v-for="(transaction,i) in transactions.filter(t => transactionShowing == 'All' || (transactionShowing == 'Expenses' && t.type == 'MONEYOUT') || (transactionShowing == 'Incomes' && t.type == 'MONEYIN'))" :key="i" radius="5"
-              margin="1" elevation="0">
+            <CardView v-for="(transaction,i) in transactions.filter(t => transactionShowing == 'All' || (transactionShowing == 'Expenses' && t.type == 'MONEYOUT') || (transactionShowing == 'Incomes' && t.type == 'MONEYIN'))" :key="i" radius="5" margin="2" elevation="0">
               <Ripple @tap="goToTransaction(transaction._id)" class="m-x-5">
                 <GridLayout class="m-15" rows="auto,auto,auto" columns="auto,*,auto">
                   <label row="0" col="0" class="font-weight-bold text-mute p-x-5" :text="transaction.category"></label>

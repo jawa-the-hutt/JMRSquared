@@ -61,6 +61,9 @@ Vue.registerElement(
   () => require('nativescript-image-zoom').ImageZoom
 );
 
+Vue.registerElement('BottomNavigation', () => require('nativescript-bottom-navigation').BottomNavigation);
+Vue.registerElement('BottomNavigationTab', () => require('nativescript-bottom-navigation').BottomNavigationTab);
+
 Vue.filter("fonticon", fonticon);
 
 import master from "./services/master";
@@ -149,17 +152,6 @@ Vue.mixin({
         options.props = props;
         console.log('Option', options);
         this.$navigator.navigate(to, options);
-      }
-    },
-    showChangeLog() {
-      var log = master.ChangeLog.GetLogs("0.3");
-      if (log != null && log != undefined) {
-        master.feedback.info({
-          title: "Change log ( v" + log.version + " )",
-          message: log.text.trim(),
-          duration: 90000,
-          position: 1
-        });
       }
     },
     ApplyNavigation(self) {

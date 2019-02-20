@@ -21,7 +21,7 @@
       <PullToRefresh row="2" @refresh="refreshList($event)">
         <ScrollView class="m-x-15">
           <StackLayout>
-            <GridLayout v-show="layouts.filter(l => l.title).length != 0" class="m-20" rows="auto,auto" columns="*,*,*">
+            <GridLayout v-show="layouts.filter(l => l.title).length != 0" class="m-20" rows="auto,auto,auto,auto,auto" columns="*,*,*">
               <CardView class="m-y-15" elevation="0" :row="item.row" :col="item.col" :key="i" v-for="(item,i) in layouts.filter(l => l.link)" textAlignment="center">
                 <Ripple @tap="onItemTap(item)" rippleColor="$blueColor" borderRadius="50%">
                   <GridLayout rows="*,*" columns="*">
@@ -107,7 +107,7 @@ export default {
       this.layouts = [];
       this.isLoaded = true;
 
-      for (let r = 0; r < 3; r++) {
+      for (let r = 0; r < 5; r++) {
         for (let c = 0; c < 3; c++) {
           this.layouts.push({
             id: r + "" + c,
@@ -135,7 +135,7 @@ export default {
                 this.layouts[i].props = {
                   businessID: results[i]._id
                 };
-              } else {
+              } else if (i == count && count < this.layouts.length - 1) {
                 if (this.layouts.filter(l => !l.title && !l.icon).length > 0) {
                   var first = this.layouts.filter(l => !l.title && !l.icon)[0];
                   first.icon = "briefcase-plus";
@@ -148,10 +148,11 @@ export default {
                     layout.icon = " ";
                     layout.title = " ";
                   });
-                clearInterval(timer);
                 if (args) {
                   args.object.refreshing = false;
                 }
+              } else {
+                clearInterval(timer);
               }
               tank.push(i);
               i++;
@@ -177,7 +178,10 @@ export default {
 
       var firstTime = appSettings.getBoolean("shownChangeLog");
       if (!firstTime) {
-        this.showChangeLog();
+        this.$feedback.success({
+          title: "Welcome to the JMRSquared app",
+          message: "You are currently using version 1"
+        });
         appSettings.setBoolean("shownChangeLog", true);
       }
     },
