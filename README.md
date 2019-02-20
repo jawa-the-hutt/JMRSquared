@@ -2,6 +2,8 @@
 
 Property management system
 
+[![Build Status](https://travis-ci.org/JMRSquared/JMRSquared.svg?branch=develop)](https://travis-ci.org/JMRSquared/JMRSquared)
+
 ## Files to ignore while going live
 
 ### server/bin/www
