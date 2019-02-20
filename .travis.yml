@@ -15,6 +15,8 @@ before_install:
   - cp .travis/deploy_jmrsquared_rsa ~/.ssh/id_rsa
   - chmod 600 ~/.ssh/id_rsa
   - ssh-add ~/.ssh/id_rsa
+  - sshpass -p $PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$ADDRESS:$PORT/home/mulavhe/www/JMRSquaredDev
+  - ls .
   - cd ./server
 install:
   - npm install
