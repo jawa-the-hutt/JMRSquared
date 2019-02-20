@@ -19,8 +19,6 @@ before_install:
   - cp .travis/deploy_jmrsquared_rsa ~/.ssh/id_rsa
   - chmod 600 ~/.ssh/id_rsa
   - ssh-add ~/.ssh/id_rsa
-  - sshpass -p $PASSWORD rsync --progress -avz -e ../ ssh -o StrictHostKeyChecking=no $USERNAME@$ADDRESS -p $PORT /home/mulavhe/www/JMRSquaredDev
-  - rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/<dir> <ssh-user>@<deploy-host>:path/to/files
   - cd ./server
 install:
   - npm install
@@ -30,6 +28,6 @@ before_deploy:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: bash ".travis/deploy.sh"
+    script: bash ".travis/deploy.sh" $USERNAME $PASSWORD $ADDRESS $PORT
     on:
       branch: develop
