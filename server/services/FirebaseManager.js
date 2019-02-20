@@ -19,7 +19,6 @@ class FCM {
         try {
             return app.options.databaseURL;
         } catch (ex) {
-            console.log(ex);
             return null;
         }
     }
