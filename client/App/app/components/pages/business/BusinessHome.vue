@@ -5,14 +5,9 @@
       <BottomNavigation class="businessIcon" :class="{'visible':business}" @tabSelected="onBottomNavigationTabSelected" :selectedTabIndex="currentTab" titleVisibility="always" activeColor="#0093a4" inactiveColor="black" backgroundColor="transparent" row="1">
         <BottomNavigationTab v-for="(tab,i) in tabs" :key="i" :title="tab.text" :icon="tab.icon" />
       </BottomNavigation>
-      <!--  
-        <SegmentedBar row="1" #tabs borderColor="$blueDarkColor" backgroundColor="transparent" selectedBackgroundColor="#0093a4" v-model="currentTab">
-          <SegmentedBarItem  v-for="(tab,i) in tabs" :key="i" class="mdi" @tap="currentTab = i" style="font-size:25%" :title="tab.icon | fonticon"></SegmentedBarItem>
-        </SegmentedBar>
-      -->
     </GridLayout>
     <GridLayout v-show="!business" rows="*" columns="*">
-      <ActivityIndicator v-if="!business" verticalAlignment="center" textAlignment="center" :busy="!business"></ActivityIndicator>
+      <ActivityIndicator verticalAlignment="center" textAlignment="center" :busy="!business"></ActivityIndicator>
     </GridLayout>
   </page>
 </template>
@@ -73,7 +68,7 @@ export default {
           if (this.business.currentAuth.authority == "WORKER") {
             this.tabs.push({
               text: "Notifications",
-              icon: "ic_bell_black_24dp",
+              icon: "ic_bell_black_48dp",
               view: "BusinessNotifications"
             });
           }
@@ -81,24 +76,24 @@ export default {
             case "ADMIN":
               this.tabs.push({
                 text: "Notifications",
-                icon: "ic_home_black_24dp",
+                icon: "ic_home_black_48dp",
                 view: "BusinessProfile"
               });
               this.tabs.push({
                 text: "Settings",
-                icon: "ic_settings_black_24dp",
+                icon: "ic_settings_black_48dp",
                 view: "BusinessSettings"
               });
 
             case "WORKER":
               this.tabs.push({
                 text: "Transactions",
-                icon: "ic_receipt_black_24dp",
+                icon: "ic_receipt_black_48dp",
                 view: "BusinessTransactions"
               });
               this.tabs.push({
                 text: "Stats",
-                icon: "ic_finance_black_24dp",
+                icon: "ic_finance_black_48dp",
                 view: "BusinessStats"
               });
               this.currentTab = 0;
@@ -169,7 +164,7 @@ export default {
 .businessIcon {
   &.visible {
     animation-name: show;
-    animation-duration: 1s;
+    animation-duration: 2s;
     animation-fill-mode: forwards;
   }
   @keyframes show {
