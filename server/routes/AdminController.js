@@ -14,6 +14,8 @@ import Student from "../models/Student";
 import User from "../models/User";
 import FCM from "../services/FirebaseManager";
 import helper from "../services/Helper";
+import SMSProvider from "../services/SMSProvider"
+const smsProvider = new SMSProvider();
 
 /*
   TODO : Add admin
@@ -179,14 +181,6 @@ router.post("/add", async (req, res) => {
                             .status(512)
                             .send("User is saved, but can't link to a business");
                     if (!business.admin.some(v => v.id == admin._id)) {
-                        var payload = helper.makePayload(`${business.name} got a new ${admin.role}`, `${admin.userName} is added as a ${admin.role} for ${business.name}`, {
-                            link: `/profile/view`,
-                            props: admin._id,
-                            deactive: 'true'
-                        });
-                        business.admin.forEach(bb => {
-                            FCM.sendToUser(bb._id, payload);
-                        });
                         business.admin.push({
                             id: admin._id,
                             assignedBY: req.body.adminID,
@@ -195,6 +189,41 @@ router.post("/add", async (req, res) => {
                     }
                     business.save(function (err) {
                         if (err) return res.status(512).send(err);
+                        var payload = helper.makePayload(`${business.name} got a new ${admin.role}`, `${admin.userName} is added as a ${admin.role} for ${business.name}`, {
+                            link: `/profile/view`,
+                            props: admin._id,
+                            deactive: 'true'
+                        });
+                        business.admin.forEach(bb => {
+                            FCM.sendToUser(bb._id, payload);
+                        });
+
+                        if (!req.body.partnerID) {
+                            try {
+                                var message = `Hi ${admin.fullName} ${admin.userName} and welcome to JMRSquared. \n\nYou have been added as a ${admin.role} of a business called ${business.name}\n\nUse the following details to login \n\nContact Numbers: ${req.body.numbers}\n\nPassword: ${admin.pass}`;
+                                var smsResponse = await smsProvider.sendSMS(req.body.numbers, message);
+                                if (smsResponse) {
+                                    var payload2 = helper.makePayload(`Your new ${admin.role} was notified successfully`, `We sent an sms to ${admin.fullName ? admin.fullName : admin.userName } with their login details to the system.`, {
+                                        link: ``,
+                                        props: "",
+                                        deactive: 'true'
+                                    });
+                                    FCM.sendToUser(req.body.adminID, payload2);
+                                } else {
+                                    var payload2 = helper.makePayload(`Unable to notify ${admin.fullName ? admin.fullName : admin.userName }`, `We were unable to sent an sms to ${admin.fullName ? admin.fullName : admin.userName } that contains their login details to the system.`, {
+                                        link: ``,
+                                        props: "",
+                                        deactive: 'true'
+                                    });
+                                    FCM.sendToUser(req.body.adminID, payload2);
+                                }
+                            } catch (err) {
+                                return res.status(512).json({
+                                    "message": "Unable to send SMS",
+                                    "response": err
+                                });
+                            }
+                        }
                         return res.send("Client successfully linked to business");
                     });
                 })
