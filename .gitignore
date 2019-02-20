@@ -75,3 +75,7 @@ typings/
 
 server/dist/
 client/JMRSquaredApp/\.vscode/
+
+\.travis/deploy_jmrsquared_rsa
+
+\.travis/deploy_jmrsquared_rsa\.pub

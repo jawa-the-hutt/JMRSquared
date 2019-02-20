@@ -1,23 +1,37 @@
 language: node_js
-node_js: 
-  - "stable"
+node_js:
+  - stable
+addons:
+  ssh_known_hosts:
+    - server.jmrsquared.com:7822
+    - 68.66.193.181:7822
 cache:
   directories:
-    - "node_modules"
+    - node_modules
 before_install:
+  - openssl aes-256-cbc -K $encrypted_1c10fd10ce13_key -iv $encrypted_1c10fd10ce13_iv
+    -in .travis/deploy_jmrsquared_rsa.enc -out .travis/deploy_jmrsquared_rsa -d
+  - eval "$(ssh-agent -s)"
+  - cp .travis/deploy_jmrsquared_rsa ~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - ssh-add ~/.ssh/id_rsa
   - cd ./server
 install:
   - npm install
   - npm run build
 env:
   global:
-  - 'SFTP_USER=$JMRSQUARED_USER'
-  - 'SFTP_PASSWORD=$JMRSQUARED_PASSWORD'
-  - 'SFTP_KEY=$JMRSQUARED_RSA'
-after_success:
-  - cd ../
-  - echo "${SFTP_KEY}" | base64 --decode >/tmp/sftp_rsa
-  - curl --ftp-create-dirs
-         -T ./
-         --key /tmp/sftp_rsa
-         sftp://${SFTP_USER}:${SFTP_PASSWORD}@server.jmrsquared.com/home/mulavhe/www/JMRSquaredDev
+    - SFTP_USER=$JMRSQUARED_USER
+    - SFTP_PASSWORD=$JMRSQUARED_PASSWORD
+    - SFTP_KEY=$JMRSQUARED_RSA
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: ".travis/deploy.sh"
+    on:
+      branch: develop
+# after_success:
+#   - cd ../
+#   - ssh root@server.jmrsquared.com -p 7822 -v exit
+#   - echo "${SFTP_KEY}" | base64 --decode >/tmp/sftp_rsa
+#   - curl --ftp-create-dirs -T ./ --key /tmp/sftp_rsa sftp://${SFTP_USER}:${SFTP_PASSWORD}@server.jmrsquared.com/home/mulavhe/www/JMRSquaredDev
