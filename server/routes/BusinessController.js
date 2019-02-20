@@ -306,7 +306,18 @@ router.post("/add/business", auth.required, (req, res, next) => {
                 return res.status(512).send("A business name is required");
             }
             business.save(function (err) {
-                if (err) return res.status(512).send(err);
+                if (err) {
+                    if (
+                        err.name == "ValidationError" &&
+                        err.errors &&
+                        Object.values(err.errors).some(v => v.message)
+                    ) {
+                        return res
+                            .status(512)
+                            .send(Object.values(err.errors).map(v => v.message)[0]);
+                    }
+                    return res.status(512).send("Unable to save changes, try again later");
+                }
                 cronJob.populateBusinessSettings();
                 cronJob.populateBusinessTargets();
                 res.send(business._id);

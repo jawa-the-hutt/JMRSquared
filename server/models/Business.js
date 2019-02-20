@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+var uniqueValidator = require("mongoose-beautiful-unique-validation");
 var Schema = mongoose.Schema;
 
 const BusinessSchema = new mongoose.Schema({
@@ -23,7 +24,11 @@ const BusinessSchema = new mongoose.Schema({
         },
         settings: Array
     }],
-    name: String,
+    name: {
+        type: String,
+        uniqueCaseInsensitive: true,
+        unique: "Business name is already taken."
+    },
     icon: String,
     logo: String,
     type: Object,
@@ -49,11 +54,12 @@ const BusinessSchema = new mongoose.Schema({
     }
 });
 
-BusinessSchema.methods.findSimilarTypes = function(cb) {
+BusinessSchema.methods.findSimilarTypes = function (cb) {
     return this.model('Animal').find({
         type: this.type
     }, cb);
 };
+BusinessSchema.plugin(uniqueValidator);
 
 const Business = mongoose.model('Business', BusinessSchema);
 module.exports = Business;
