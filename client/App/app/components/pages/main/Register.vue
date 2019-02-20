@@ -1,8 +1,8 @@
 <template>
-  <page class="backgroundImage" actionBarHidden="true" @loaded="pageLoaded()">
-    <GridLayout class="backgroundImageOverlay" rows="*">
+  <page actionBarHidden="true" @loaded="pageLoaded()">
+    <GridLayout rows="*">
       <ScrollView row="0" width="100%">
-        <CardView verticalAlignment="center" padding="10" margin="25" elevation="10" shadowOffsetHeight="10" shadowOpacity="0.2" shadowRadius="50">
+        <CardView verticalAlignment="center" padding="10" elevation="10" shadowOffsetHeight="10" shadowOpacity="0.2" shadowRadius="50">
           <GridLayout width="100%">
             <FlexboxLayout class="m-10" justifyContent="space-between" width="100%" alignSelf="center" height="100%" flexDirection="column">
   
@@ -192,19 +192,4 @@ export default {
 </script>
 
 <style scoped>
-.backgroundImage {
-  background: url("~/assets/images/suit77_black_white.jpeg") no-repeat center;
-  background-size: cover;
-  padding-top: 3%;
-  padding-bottom: 3%;
-}
-
-.backgroundImageOverlay {
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: -1;
-}
-
-.bg-dark-blue-overlay {
-  background-color: rgba(255, 255, 255, 0.3);
-}
 </style>

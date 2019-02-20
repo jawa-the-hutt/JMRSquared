@@ -41,7 +41,7 @@ router.post("/block/user/:adminID", auth.required, (req, res, next) => {
     Admin.findById(adminID).then(admin => {
         if (admin == null) res.status(512).send("User not found");
         admin.removed = true;
-        admin.save(function () {
+        admin.save(function() {
             User.deleteMany({
                     adminID: admin._id
                 })
@@ -87,7 +87,7 @@ router.get(
     }
 );
 
-router.get("/GetById/:adminID", function (req, res) {
+router.get("/GetById/:adminID", function(req, res) {
     var adminID = req.params.adminID;
     Admin.findById(adminID)
         .populate(["documents"])
@@ -136,7 +136,7 @@ router.post("/login", auth.disabled, (req, res, next) => {
     }
 });
 
-router.post("/add", async (req, res) => {
+router.post("/add", async(req, res) => {
     let admin = new Admin({
         _id: new mongoose.Types.ObjectId(),
         email: req.body.email,
@@ -154,7 +154,7 @@ router.post("/add", async (req, res) => {
         }
     }
 
-    admin.save(async function (err) {
+    admin.save(async function(err) {
         if (err) {
             if (
                 err.name == "ValidationError" &&
@@ -187,7 +187,7 @@ router.post("/add", async (req, res) => {
                             authority: admin.role && admin.role.toUpperCase()
                         });
                     }
-                    business.save(async function (err) {
+                    business.save(async(err) => {
                         if (err) return res.status(512).send(err);
                         // We just return to the client only , but execution continues
                         res.send("Client successfully linked to business");
@@ -240,7 +240,7 @@ router.post("/add", async (req, res) => {
     });
 });
 
-router.post("/device/token/add", function (req, res) {
+router.post("/device/token/add", function(req, res) {
     var adminID = req.body.adminID;
     var deviceToken = req.body.deviceToken;
     var deviceInfo = req.body.deviceInfo;
@@ -263,7 +263,7 @@ router.post("/device/token/add", function (req, res) {
                     token: deviceToken,
                     deviceInfo: deviceInfo
                 });
-                admin.save(function (err) {
+                admin.save(function(err) {
                     if (err) return res.status(512).send(err);
                     return res.send("Successfully added the new token");
                 });
@@ -276,7 +276,7 @@ router.post("/device/token/add", function (req, res) {
         });
 });
 
-router.get("/bug/get/:bugId", function (req, res) {
+router.get("/bug/get/:bugId", function(req, res) {
     var bugID = req.params.bugId;
     Bug.findById(bugID).then(bug => {
         if (bug == null) {
@@ -287,7 +287,7 @@ router.get("/bug/get/:bugId", function (req, res) {
     });
 });
 
-router.get("/bug/all", function (req, res) {
+router.get("/bug/all", function(req, res) {
     Bug.find({}, "_id senderName senderPic bugText date").then(bugs => {
         if (bugs == null) {
             res.status(512).send("Error : 9032rtu834g9erbo");
@@ -297,7 +297,7 @@ router.get("/bug/all", function (req, res) {
     });
 });
 
-router.post("/bug/add", function (req, res) {
+router.post("/bug/add", function(req, res) {
     var bug = new Bug({
         _id: mongoose.Types.ObjectId(),
         senderName: req.body.senderName,
@@ -305,7 +305,7 @@ router.post("/bug/add", function (req, res) {
         bugText: req.body.bugText
     });
 
-    bug.save(function (err) {
+    bug.save(function(err) {
         if (err) {
             res.status(512).send(err);
         }
@@ -313,7 +313,7 @@ router.post("/bug/add", function (req, res) {
     });
 });
 
-router.get("/document/get/:documentId", function (req, res) {
+router.get("/document/get/:documentId", function(req, res) {
     var documentID = req.params.documentId;
     Document.findById(documentID).then(document => {
         if (document == null) {
@@ -324,7 +324,7 @@ router.get("/document/get/:documentId", function (req, res) {
     });
 });
 
-router.get("/document/all", function (req, res) {
+router.get("/document/all", function(req, res) {
     Document.find({}, "_id title description type date").then(documents => {
         if (documents == null) {
             res.status(512).send("Error : 9032rtu834g9erbo");
@@ -334,7 +334,7 @@ router.get("/document/all", function (req, res) {
     });
 });
 
-router.post("/document/add", function (req, res) {
+router.post("/document/add", function(req, res) {
     var document = new Document({
         _id: mongoose.Types.ObjectId(),
         title: req.body.title,
@@ -345,7 +345,7 @@ router.post("/document/add", function (req, res) {
         type: req.body.type
     });
 
-    document.save(function (err) {
+    document.save(function(err) {
         if (err) {
             res.status(512).send(err);
         }
@@ -354,7 +354,7 @@ router.post("/document/add", function (req, res) {
 });
 
 // This function will soon be abolute (it returns for properties only)
-router.get("/transaction/all", function (req, res) {
+router.get("/transaction/all", function(req, res) {
     Transaction.find({
                 $or: [{
                         source: "PROPERTY"
@@ -380,7 +380,7 @@ router.get("/transaction/all", function (req, res) {
 });
 
 // This is the new function to be used
-router.get("/transaction/:source/all", function (req, res) {
+router.get("/transaction/:source/all", function(req, res) {
     var source = req.params.source.toUpperCase();
     Transaction.find({
                 source: source
@@ -397,7 +397,7 @@ router.get("/transaction/:source/all", function (req, res) {
         });
 });
 
-router.get("/notifications/all", function (req, res) {
+router.get("/notifications/all", function(req, res) {
     Notification.find({
         dueDate: null
     }).then(result => {
