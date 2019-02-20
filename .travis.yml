@@ -21,6 +21,3 @@ before_deploy:
 deploy:
   - sshpass -p $PASSWORD rsync --progress -azvh --update --quiet -e "ssh -p $PORT" --exclude 'node_modules' ./server/* $USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev/server
   - sshpass -p $PASSWORD ssh -p $PORT $USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev/ 'bash -s' < bash "./bash.sh"
-    # bash ".travis/deploy.sh" $USERNAME $PASSWORD $ADDRESS $PORT ./bash.sh
-    on:
-      branch: develop
