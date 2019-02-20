@@ -19,19 +19,11 @@ before_install:
 install:
   - npm install
   - npm run build
-env:
-  global:
-    - SFTP_USER=$JMRSQUARED_USER
-    - SFTP_PASSWORD=$JMRSQUARED_PASSWORD
-    - SFTP_KEY=$JMRSQUARED_RSA
+before_deploy:
+  - cd ../
 deploy:
   - provider: script
     skip_cleanup: true
     script: bash ".travis/deploy.sh"
     on:
       branch: develop
-# after_success:
-#   - cd ../
-#   - ssh root@server.jmrsquared.com -p 7822 -v exit
-#   - echo "${SFTP_KEY}" | base64 --decode >/tmp/sftp_rsa
-#   - curl --ftp-create-dirs -T ./ --key /tmp/sftp_rsa sftp://${SFTP_USER}:${SFTP_PASSWORD}@server.jmrsquared.com/home/mulavhe/www/JMRSquaredDev
