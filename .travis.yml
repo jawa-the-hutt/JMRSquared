@@ -2,6 +2,9 @@ language: node_js
 node_js:
   - stable
 addons:
+  apt:
+    packages:
+      - sshpass
   ssh_known_hosts:
     - server.jmrsquared.com:7822
     - 68.66.193.181:7822
