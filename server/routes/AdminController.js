@@ -187,8 +187,12 @@ router.post("/add", async (req, res) => {
                             authority: admin.role && admin.role.toUpperCase()
                         });
                     }
-                    business.save(function (err) {
+                    business.save(async function (err) {
                         if (err) return res.status(512).send(err);
+                        // We just return to the client only , but execution continues
+                        res.send("Client successfully linked to business");
+                        // JS <love> , by now the client got the response already, we are just sending out notifications and staff now
+
                         var payload = helper.makePayload(`${business.name} got a new ${admin.role}`, `${admin.userName} is added as a ${admin.role} for ${business.name}`, {
                             link: `/profile/view`,
                             props: admin._id,
@@ -210,21 +214,17 @@ router.post("/add", async (req, res) => {
                                     });
                                     FCM.sendToUser(req.body.adminID, payload2);
                                 } else {
-                                    var payload2 = helper.makePayload(`Unable to notify ${admin.fullName ? admin.fullName : admin.userName }`, `We were unable to sent an sms to ${admin.fullName ? admin.fullName : admin.userName } that contains their login details to the system.`, {
-                                        link: ``,
-                                        props: "",
-                                        deactive: 'true'
-                                    });
-                                    FCM.sendToUser(req.body.adminID, payload2);
+                                    throw new Error(Error);
                                 }
                             } catch (err) {
-                                return res.status(512).json({
-                                    "message": "Unable to send SMS",
-                                    "response": err
+                                var payload2 = helper.makePayload(`Unable to notify ${admin.fullName ? admin.fullName : admin.userName }`, `We were unable to sent an sms to ${admin.fullName ? admin.fullName : admin.userName } that contains their login details to the system.`, {
+                                    link: ``,
+                                    props: "",
+                                    deactive: 'true'
                                 });
+                                FCM.sendToUser(req.body.adminID, payload2);
                             }
                         }
-                        return res.send("Client successfully linked to business");
                     });
                 })
                 .catch(err => {
