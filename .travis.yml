@@ -9,3 +9,15 @@ before_install:
 install:
   - npm install
   - npm run build
+env:
+  global:
+  - 'SFTP_USER=$JMRSQUARED_USER'
+  - 'SFTP_PASSWORD=$JMRSQUARED_PASSWORD'
+  - 'SFTP_KEY=$JMRSQUARED_RSA'
+after_success:
+  - cd ../
+  - echo "${SFTP_KEY}" | base64 --decode >/tmp/sftp_rsa
+  - curl --ftp-create-dirs
+         -T ./
+         --key /tmp/sftp_rsa
+         sftp://${SFTP_USER}:${SFTP_PASSWORD}@server.jmrsquared.com/home/mulavhe/www/JMRSquaredDev
