@@ -6,8 +6,7 @@ addons:
     packages:
       - sshpass
   ssh_known_hosts:
-    - server.jmrsquared.com:7822
-    - 68.66.193.181:7822
+    - $ADDRESS:$PORT
 cache:
   apt: true
   directories:
