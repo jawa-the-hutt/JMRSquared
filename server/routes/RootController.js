@@ -47,6 +47,7 @@ router.get("/", async (req, res, next) => {
         api: true,
         db: dbActive,
         fcmId: fcmID,
+        dateTime: new Date(),
         jobs
     });
 });
