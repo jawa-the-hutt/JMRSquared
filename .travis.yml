@@ -19,11 +19,17 @@ script:
   - npm run build
   - cd ../
 after_script:
-  - sshpass -p $PASSWORD rsync --progress -azvh --update -e "ssh -p $PORT" ./server/ $USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev/server
+  - sshpass -p $PASSWORD rsync --progress -azvh --update -e ssh -p$PORT ./server/ $USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev/server
   - sshpass -p $PASSWORD ssh -t -p $PORT $USERNAME@$ADDRESS<<EOF
-  - echo uname -a
+  - uname -a
   - cd /home/mulavhe/www/JMRSquaredDev
   - ls
   - cd ../
   - ./startDev.sh
   - EOF
+  deploy:
+  - provider: script
+    skip_cleanup: true
+    script: sshpass -p $PASSWORD ssh -p$PORT $USERNAME@$ADDRESS "uname -a" && sshpass -p $PASSWORD rsync -rav -e ssh --exclude='.git/' --exclude=scripts/ --exclude='.travis.yml' --delete-excluded ./ $USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev
+    on:
+      branch: develop
