@@ -53,7 +53,7 @@ export default class helper {
         return mappedTargets;
     }
 
-    static GetTransactionProfitAndRevenue(transactions, maxMonths = 5, maxWeeks = 3, maxDays = 3) {
+    static GetTransactionProfitAndRevenue(transactions, maxMonths = 5, maxWeeks = 1, maxDays = 3) {
         var revenues = [];
         if (!transactions) transactions = [];
         if (!revenues.some(v => v.key == 'overall')) {
@@ -106,13 +106,13 @@ export default class helper {
             // Calculate weekly profit and revenue
             var weeksDiff = moment().endOf('week').diff(value.date, "weeks");
             if (weeksDiff >= 0 && weeksDiff < maxWeeks) {
-                var weekDate = moment().startOf('week').subtract(weeksDiff, 'weeks').format("Do MMMM YYYY");
+                var weekDate = moment().startOf('week').subtract(weeksDiff, 'weeks').format("dddd Do");
                 if (!revenues.some(v => v.key == weeksDiff && v.title == weekDate)) {
                     revenues.push({
                         key: weeksDiff,
                         revenue: 0,
                         profit: 0,
-                        title: weekDate,
+                        title: `Weekly from ${weekDate} till today`,
                         type: "weekly"
                     });
                 }
