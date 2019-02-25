@@ -28,8 +28,8 @@
                 <label row="1" col="1" class="p-x-15 h4" :text="option.text"></label>
               </GridLayout>
             </Ripple>
-            <StackLayout v-if="business.type.optionals.length > 0" width="100%" class="hr-light"></StackLayout>
-            <GridLayout v-if="business.type.optionals.length > 0" class="m-10" rows="auto" columns="*,auto">
+            <StackLayout v-if="business.type && business.type.optionals && business.type.optionals.length > 0" width="100%" class="hr-light"></StackLayout>
+            <GridLayout v-if="business.type && business.type.optionals && business.type.optionals.length > 0" class="m-10" rows="auto" columns="*,auto">
               <label row="0" col="0" class="h3 font-weight-bold text-mute text-dark-blue" text="Optionals"></label>
             </GridLayout>
   

@@ -16,11 +16,11 @@
     <CardView row="1" verticalAlignment="center" margin="2" elevation="15" ref="bottomSheet" :visibility="isBottomSheetOpen ? 'visible' : 'collapse'">
       <StackLayout class="m-x-15 m-y-5">
         <GridLayout rows="auto" textAlignment="right" columns="auto,*,auto">
-          <Ripple col="0" textAlignment="left">
+          <Ripple v-show="false" col="0" textAlignment="left">
             <label class="mdi m-15" verticalAlignment="center" textAlignment="left" fontSize="25%" :text="'mdi-arrow-left' | fonticon"></label>
           </Ripple>
           <label col="1" class="m-15 text-dark-blue font-weight-bold" fontSize="18%" verticalAlignment="center" textAlignment="center" :text="currentTitle"></label>
-          <Ripple col="2" textAlignment="right">
+          <Ripple v-show="false" col="2" textAlignment="right">
             <label class="mdi m-15" verticalAlignment="center" textAlignment="right" fontSize="25%" :text="'mdi-arrow-right' | fonticon"></label>
           </Ripple>
         </GridLayout>
