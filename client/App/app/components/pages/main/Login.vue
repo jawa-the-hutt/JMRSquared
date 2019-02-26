@@ -6,7 +6,7 @@
           <GridLayout width="100%">
             <FlexboxLayout class="m-10" justifyContent="space-between" width="100%" alignSelf="center" height="100%" flexDirection="column">
   
-              <label  @tap="isEnterEmail = !isEnterEmail" fontSize="20%" verticalAlignment="center" textAlignment="center" class="font-weight-bold m-20 text-mute" text="Login"></label>
+              <label @tap="isEnterEmail = !isEnterEmail" fontSize="20%" verticalAlignment="center" textAlignment="center" class="font-weight-bold m-20 text-mute" text="Login"></label>
   
               <GridLayout v-show="!isEnterEmail" class="m-10" rows="auto,auto" columns="auto,*">
                 <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-10" fontSize="25%" :text="'mdi-phone' | fonticon"></label>
@@ -81,7 +81,6 @@ export default {
     this.isLoading = false;
   },
   methods: {
-    // Travis
     GoToRegister() {
       this.navigate("/register");
     },
