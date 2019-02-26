@@ -11,13 +11,12 @@ cache:
   apt: true
   directories:
     - node_modules
-before_install:
-  - cd ./server
 install:
+  - cd ./server
   - npm install
-script:
   - npm run build
   - cd ../
+  - echo "Going here."
 after_script:
   - cat "./bash.sh" "/home/mulavhe/www/JMRSquaredDev" "3000" | sshpass -p "$PASSWORD" ssh -t -p "$PORT" -oStrictHostKeyChecking=no "$USERNAME@$ADDRESS"
 deploy:

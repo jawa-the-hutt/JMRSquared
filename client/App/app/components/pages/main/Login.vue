@@ -81,6 +81,7 @@ export default {
     this.isLoading = false;
   },
   methods: {
+    // Travis
     GoToRegister() {
       this.navigate("/register");
     },
