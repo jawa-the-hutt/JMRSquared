@@ -1,6 +1,6 @@
 #!/bin/bash
-npm install --prefix ./server/
-npm run build --prefix  ./server/
+npm install --prefix $0/server/
+npm run build --prefix  $0/server/
 uname -a
-fuser 3000/tcp -k
-# npm start --prefix ./server/ &
+fuser $1/tcp -k
+npm start --prefix $0/server/ &

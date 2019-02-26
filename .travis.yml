@@ -17,14 +17,12 @@ install:
   - npm install
 script:
   - npm run build
-after_script:
   - cd ../
-  - sshpass -p $PASSWORD rsync --progress -azvh --update -e ssh -p $PORT ./server/ $USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev/server
-  - sshpass -p $PASSWORD ssh -t -p $PORT $USERNAME@$ADDRESS "uname -a"
-  - cat "./bash.sh" | sshpass -p "$PASSWORD" ssh -t -p "$PORT" -oStrictHostKeyChecking=no "$USERNAME@$ADDRESS"
-# deploy:
-#   provider: script
-#   skip_cleanup: true
-#   script: bash "./deploy.sh" $PASSWORD $PORT $USERNAME $ADDRESS "/home/mulavhe/www/JMRSquaredDev"
-#   on:
-#     branch: develop
+after_script:
+  - cat "./bash.sh" "/home/mulavhe/www/JMRSquaredDev" "3000" | sshpass -p "$PASSWORD" ssh -t -p "$PORT" -oStrictHostKeyChecking=no "$USERNAME@$ADDRESS"
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: sshpass -p $PASSWORD rsync --progress -azvh --update -e "ssh -p$PORT" "./" "$USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev/"
+  on:
+    branch: develop
