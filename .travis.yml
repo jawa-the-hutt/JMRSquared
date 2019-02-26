@@ -30,6 +30,6 @@ after_script:
   deploy:
   - provider: script
     skip_cleanup: true
-    script: sshpass -p $PASSWORD ssh -p$PORT $USERNAME@$ADDRESS "uname -a" && sshpass -p $PASSWORD rsync -rav -e ssh --exclude='.git/' --exclude=scripts/ --exclude='.travis.yml' --delete-excluded ./ $USERNAME@$ADDRESS:/home/mulavhe/www/JMRSquaredDev
+    script: bash "./bash.sh" $PASSWORD $PORT $USERNAME $ADDRESS "/home/mulavhe/www/JMRSquaredDev"
     on:
       branch: develop
