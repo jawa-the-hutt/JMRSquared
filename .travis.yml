@@ -27,9 +27,9 @@ after_script:
   - cd ../
   - ./startDev.sh
   - EOF
-  deploy:
-  - provider: script
-    skip_cleanup: true
-    script: bash "./bash.sh" $PASSWORD $PORT $USERNAME $ADDRESS "/home/mulavhe/www/JMRSquaredDev"
-    on:
-      branch: develop
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: bash "./bash.sh" $PASSWORD $PORT $USERNAME $ADDRESS "/home/mulavhe/www/JMRSquaredDev"
+  on:
+    branch: develop
