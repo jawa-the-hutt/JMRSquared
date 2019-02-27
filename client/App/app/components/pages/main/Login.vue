@@ -81,6 +81,7 @@ export default {
     this.isLoading = false;
   },
   methods: {
+    // tt
     GoToRegister() {
       this.navigate("/register");
     },
