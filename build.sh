@@ -10,7 +10,7 @@ else
     echo "Server was has stopped, Restarting it...";
     npm install --prefix "$1/server/";
     npm run build --prefix  "$1/server/";
-    date &>> "/tmp/running.txt";
+    date &>> "/tmp/running-$2.txt";
     npm start --prefix "$1/server/" &>> "/tmp/running.txt" &
 fi
 
