@@ -17,7 +17,7 @@ install:
   - npm run build
 script:
   - cd ../
-  - echo "Running the script that ruplicates servers" 
+  - echo "Running the script that ruplicates servers"
 #   - sshpass -p "$PASSWORD" rsync --progress -azvh --update --exclude='.git/' --filter=":- .gitignore" --exclude='.travis.yml' -e "ssh -p $PORT -oStrictHostKeyChecking=no" "./" "$USERNAME@$ADDRESS:$PROJECT_FOLDER/"
 deploy:
   - provider: script
