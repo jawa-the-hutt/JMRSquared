@@ -16,12 +16,14 @@ install:
   - npm install
   - npm run build
   - cd ../
-# script:
+ script:
+   - echo "Running the script that ruplicates servers" 
 #   - sshpass -p "$PASSWORD" rsync --progress -azvh --update --exclude='.git/' --filter=":- .gitignore" --exclude='.travis.yml' -e "ssh -p $PORT -oStrictHostKeyChecking=no" "./" "$USERNAME@$ADDRESS:$PROJECT_FOLDER/"
 deploy:
   provider: script
-  script: bash ./deploy.sh "$PASSWORD" "$PORT" "$USERNAME" "$ADDRESS" "$PROJECT_FOLDER" "$PROJECT_PORT"
+  script: bash "./deploy.sh" "$PASSWORD" "$PORT" "$USERNAME" "$ADDRESS" "$PROJECT_FOLDER" "$PROJECT_PORT"
   on:
     branch: develop
-# after_success:
+after_success:
+  - echo "Deploy finised successfully"
 #   - sshpass -p "$PASSWORD" ssh -t -p "$PORT" -oStrictHostKeyChecking=no "$USERNAME@$ADDRESS" "bash -s" < ./build.sh "$PROJECT_FOLDER" "$PROJECT_PORT"
