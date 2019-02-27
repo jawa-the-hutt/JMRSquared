@@ -79,3 +79,10 @@ client/JMRSquaredApp/\.vscode/
 \.travis/deploy_jmrsquared_rsa
 
 \.travis/deploy_jmrsquared_rsa\.pub
+
+# NPM
+node_modules
+
+# NativeScript application
+hooks
+platforms
