@@ -5,7 +5,7 @@ USERNAME=$3;
 ADDRESS=$4;
 PROJECT_FOLDER=$5;
 PROJECT_PORT=$6;
-FILE_NAME="running-$2-$(date +"%F___%T").txt";
+FILE_NAME="running-$6-$(date +"%F___%T").txt";
 
 # Copy files to server
 echo "Build file is /tmp/$FILE_NAME";

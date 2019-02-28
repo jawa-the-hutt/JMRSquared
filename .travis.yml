@@ -20,12 +20,10 @@ script:
   - echo "Running the script that ruplicates servers"
 deploy:
   - provider: script
-    script: bash "./deploy.sh" "$PASSWORD" "$PORT" "$USERNAME" "$ADDRESS" "$PROJECT_FOLDER" "$PROJECT_PORT"
+    script: ./deploy.sh "$PASSWORD" "$PORT" "$USERNAME" "$ADDRESS" "$PROJECT_FOLDER" "$PROJECT_PORT"
     on:
       branch: develop
   - provider: script
-    script: bash "./deploy.sh" "$PASSWORD" "$PORT" "$USERNAME" "$ADDRESS" "$PROJECT_LIVE_FOLDER" "$PROJECT_LIVE_PORT"
+    script: ./deploy.sh "$PASSWORD" "$PORT" "$USERNAME" "$ADDRESS" "$PROJECT_LIVE_FOLDER" "$PROJECT_LIVE_PORT"
     on:
       branch: master
-after_script:
-  - echo "Deploy finised successfully"
