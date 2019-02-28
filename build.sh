@@ -1,6 +1,7 @@
 #!/bin/bash
 FILENAME = "$3"
 echo "Deploying to $1" >> "/tmp/$FILENAME";
+ls;
 
 if lsof -Pi :"$2" -sTCP:LISTEN -t >/dev/null ; then
     echo "Server was already up" >> "/tmp/$FILENAME";
