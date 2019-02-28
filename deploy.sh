@@ -8,6 +8,8 @@ let $PROJECT_PORT = "$6"
 let $FILE_NAME = "running-$2-$(date).txt"
 
 # Copy files to server
+echo "Build file is /tmp/$FILE_NAME";
+echo "Firing a build and deploy to $PROJECT_FOLDER" >> "/tmp/$FILE_NAME";
 sshpass -p "$PASSWORD" rsync --progress -azvh --update --exclude='.git/' --filter=":- .gitignore" --exclude='.travis.yml' -e "ssh -p $PORT -oStrictHostKeyChecking=no" "./" "$USERNAME@$ADDRESS:$PROJECT_FOLDER/"
 
 # Run build on server
