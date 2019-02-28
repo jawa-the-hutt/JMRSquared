@@ -11,7 +11,7 @@ else
     echo "Server was has stopped, Restarting it..." >> "/tmp/$FILENAME";
     npm install --prefix "$1/server/";
     npm run build --prefix  "$1/server/";
-    npm start --prefix "$1/server/" >> "/tmp/$FILENAME";
+    npm start --prefix "$1/server/" >> "/tmp/$FILENAME" &
 fi
 
 echo "Done deploying to $1" >> "/tmp/$FILENAME";
