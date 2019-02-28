@@ -1,5 +1,5 @@
 #!/bin/bash
-$FILENAME = "running-$2-$(date).txt"
+FILENAME = "$3"
 echo "Deploying to $1" >> "/tmp/$FILENAME";
 
 if lsof -Pi :"$2" -sTCP:LISTEN -t >/dev/null ; then
