@@ -1,5 +1,5 @@
 #!/bin/bash
-FILENAME = "$3"
+FILENAME=$3;
 echo "Deploying to $1" >> "/tmp/$FILENAME";
 ls;
 

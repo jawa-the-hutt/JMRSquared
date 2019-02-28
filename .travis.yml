@@ -14,13 +14,13 @@ cache:
 install:
   - cd ./server
   - npm install
-  - npm run build
 script:
+  - npm run build
   - cd ../
   - echo "Running the script that ruplicates servers"
 deploy:
   - provider: script
-    script: bash "./deploy.sh" "$PASSWORD" "$PORT" "$USERNAME" "$ADDRESS" "$PROJECT_FOLDER" "$PROJECT_PORT"
+    script: bash "./deploy.sh" $PASSWORD $PORT $USERNAME $ADDRESS $PROJECT_FOLDER $PROJECT_PORT
     on:
       branch: develop
   - provider: script
