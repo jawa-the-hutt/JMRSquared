@@ -37,6 +37,8 @@ router.get("/cron/reboot", function (req, res) {
 
 router.post("/options/reset/all/business/settings", async (req, res) => {
   var businessID = req.body.businessID;
+  var settingTitle = req.body.settingTitle;
+  var settingDescription = req.body.settingDescription;
   var businesses = [];
 
   try {
@@ -59,22 +61,16 @@ router.post("/options/reset/all/business/settings", async (req, res) => {
     }
     var count = 0;
     businesses.forEach(async business => {
-      business.settings = [];
+      if (settingTitle && settingDescription) {
+        if (business.setting) {
+          business.setting = business.setting.filter(ss => ss.title != settingTitle && ss.description != settingDescription)
+        }
+      } else {
+        business.settings = [];
+      }
       business.markModified("settings");
       var saved = await business.save();
     });
-    Setting.findOne()
-      .then(settings => {
-        if (!settings) return res.status(512).send("No settings are avaliable.");
-        settings.settings.business.forEach(setting => {
-          setting.businessIDs = setting.businessIDs.filter(v => !businesses.some(t => t._id == v));
-          settings.markModified("settings.business");
-          settings.save(function (err) {
-            if (err) return res.status(512).send("Can not save settings replaced.");
-            return res.send("Applied changes to " + businesses.length);
-          })
-        });
-      });
   } catch (err) {
     return res.status(512).send(err.message);
   }

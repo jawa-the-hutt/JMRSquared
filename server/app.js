@@ -74,7 +74,7 @@ mongoose
         cronJob.fireJobs();
     });
 
-const logDirectory = __dirname + '/../logs';
+const logDirectory = '/tmp/' + process.env.API_NAME + '-log/';
 if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory);
 }
@@ -88,7 +88,7 @@ app.use(expressWinston.logger({
             dirname: logDirectory,
             filename: 'serverlogs-%DATE%.log',
             datePattern: 'YYYY-MM-DD',
-            zippedArchive: true,
+            zippedArchive: false,
             maxSize: '20m',
             maxFiles: '14d'
         })

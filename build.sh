@@ -1,17 +1,12 @@
 #!/bin/bash
-FILENAME=$3;
-echo "Deploying to $1" >> "/tmp/$FILENAME";
-ls;
+PROJECT_PATH=$1;
+PROJECT_NAME=$2;
+LOG_FILE_NAME=$3;
+echo "Deploying $PROJECT_NAME ..."
+echo "Deploying $PROJECT_NAME..." >> "/tmp/$LOG_FILE_NAME";
 
-if lsof -Pi :"$2" -sTCP:LISTEN -t >/dev/null ; then
-    echo "Server was already up" >> "/tmp/$FILENAME";
-    npm install --prefix "$1/server/";
-    npm run build --prefix  "$1/server/";
-else
-    echo "Server was has stopped, Restarting it..." >> "/tmp/$FILENAME";
-    npm install --prefix "$1/server/";
-    npm run build --prefix  "$1/server/";
-    npm start --prefix "$1/server/" >> "/tmp/$FILENAME" &
-fi
+npm install --prefix "$PROJECT_PATH/server/";
+npm run build --prefix  "$PROJECT_PATH/server/";
 
-echo "Done deploying to $1" >> "/tmp/$FILENAME";
+echo "Deployed $PROJECT_NAME successfully!"
+echo "Deployed $PROJECT_NAME successfully!" >> "/tmp/$LOG_FILE_NAME";

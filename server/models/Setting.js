@@ -25,19 +25,10 @@ const SettingSchema = new mongoose.Schema({
                 type: Schema.Types.ObjectId,
                 default: mongoose.Types.ObjectId()
             },
-            toAll: Boolean,
-            type: {
-                type: String
-            }, // e.g Taxify
             title: String,
             description: String,
             icon: String,
-            value: Schema.Types.Mixed,
-            businessIDs: [{
-                type: Schema.Types.ObjectId,
-                ref: 'Business',
-                default: []
-            }]
+            value: Schema.Types.Mixed
         }],
         user: [{
             // Deep down it knows it is an enum from ( business.admin.authority )
