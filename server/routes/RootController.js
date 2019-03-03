@@ -48,6 +48,7 @@ router.get("/", async (req, res, next) => {
         db: dbActive,
         fcmId: fcmID,
         dateTime: new Date(),
+        upTime: process.uptime(),
         jobs
     });
 });
