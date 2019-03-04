@@ -46,7 +46,6 @@ router.get("/", async (req, res, next) => {
 
     var upTime = moment().subtract(process.uptime(), 'seconds').fromNow();
 
-
     res.json({
         api: true,
         db: dbActive,

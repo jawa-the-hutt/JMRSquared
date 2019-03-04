@@ -7,7 +7,7 @@
         "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_module,./.babelrc,./package.json,./npm-debug.log --copy-files",
         "windowsPlay": "npm run windowsBuild && node ./dist/bin/www",
         "play": "npm run build && node ./dist/bin/www",
-        "fire": "node ./dist/bin/www",
+        "fire": "nodemon ./dist/bin/www --watch ./dist/",
         "windowsStart": "nodemon --exec npm run windowsPlay --watch ./ --ignore ./dist",
         "start": "nodemon --exec npm run play --watch ./ --ignore ./dist"
     },
