@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import Admin from '../models/Admin';
 import FCM from "../services/FirebaseManager";
 import CronJob from "../services/CronManager";
+import moment = require("moment");
 const cronJob = new CronJob();
 
 router.get("/", async (req, res, next) => {
@@ -43,12 +44,15 @@ router.get("/", async (req, res, next) => {
 
     }
 
+    var upTime = moment().subtract(process.uptime(), 'seconds').fromNow();
+
+
     res.json({
         api: true,
         db: dbActive,
         fcmId: fcmID,
         dateTime: new Date(),
-        upTime: process.uptime(),
+        upTime,
         jobs
     });
 });
