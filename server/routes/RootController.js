@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import Admin from '../models/Admin';
 import FCM from "../services/FirebaseManager";
 import CronJob from "../services/CronManager";
-import moment = require("moment");
+import moment from "moment";
 const cronJob = new CronJob();
 
 router.get("/", async (req, res, next) => {
