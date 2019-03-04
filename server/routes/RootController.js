@@ -52,7 +52,7 @@ router.get("/", async (req, res, next) => {
         db: dbActive,
         fcmId: fcmID,
         dateTime: new Date(),
-        upTime,
+        lastBuild: upTime,
         jobs
     });
 });
