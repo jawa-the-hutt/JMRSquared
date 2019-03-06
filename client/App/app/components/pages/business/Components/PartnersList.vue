@@ -18,6 +18,7 @@
             <GridLayout class="p-10" rows="auto,auto,auto" columns="auto,*,auto">
               <Image row="0" rowSpan="3" col="0" borderWidth="5px" borderColor="$blueLightColor" stretch="aspectFill" :src="partner.profilePic ? partner.profilePic : $store.state.settings.defaultProfilePic" width="70" height="70" borderRadius="50%" />
               <label row="0" col="1" class="p-x-15 font-weight-bold" fontSize="20%" verticalAlignment="bottom" :text="partner.userName"></label>
+              <label row="1" col="1" class="p-x-15" fontSize="18%" verticalAlignment="bottom" :text="partner.role.toLowerCase()"></label>
               <label row="2" col="1" class="p-x-15" fontSize="18%" verticalAlignment="bottom" :text="`0${partner.numbers}`"></label>
               <label row="0" col="2" v-if="partner.lastEventDate" class="p-x-15 font-weight-bold" :textWrap="true" fontSize="15%" verticalAlignment="bottom" textAlignment="right" :text="partner.lastEventTitle"></label>
               <label row="1" col="2" v-if="partner.lastEventDate" class="p-x-15" :textWrap="true" fontSize="15%" verticalAlignment="bottom" textAlignment="right" :text="getMoment(partner.lastEventDate).format('Do MMMM YYYY')"></label>

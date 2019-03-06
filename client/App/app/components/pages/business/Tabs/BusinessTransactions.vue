@@ -20,9 +20,10 @@
           <label class="p-10" textAlignment="right" :text="`Showing : ${transactionShowing}`"></label>
         </Ripple>
       </CardView>
-
+  
       <Fab row="2" @tap="goToAddTransaction" icon="res://ic_add_white_24dp" class="fab-button fixedBtn"></Fab>
-      <StackLayout v-if="transactions.length == 0 && !isLoading" class="p-x-15 p-5 text-dark-black" row="2" verticalAlignment="center">
+  
+      <StackLayout @tap="refreshList(null)" v-if="transactions.length == 0 && !isLoading" row="2" class="p-x-15 p-5 text-dark-black" verticalAlignment="center">
         <label textAlignment="center" class="mdi p-5" fontSize="50%" :text="'mdi-receipt' | fonticon"></label>
         <label textAlignment="center" class="font-weight-bold text-dark-black p-5" fontSize="25%" :textWrap="true" text="No transactions yet!"></label>
         <label textAlignment="center" class="text-light-black p-5" fontSize="20%" :textWrap="true" text="Hit the + button to add your first transaction"></label>

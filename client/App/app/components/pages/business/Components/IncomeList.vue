@@ -12,6 +12,12 @@
       </CardView>
   
       <Fab @tap="AddBusinessIncome" row="1" icon="res://ic_add_white_24dp" class="fab-button fixedBtn"></Fab>
+
+      <StackLayout rowSpan="2" row="1" @tap="GetBusinessIncomes()" v-if="incomes.length == 0 && !isLoading" class="p-x-15 p-5 text-dark-black" verticalAlignment="center">
+        <label textAlignment="center" class="mdi p-5" fontSize="50%" :text="'mdi-trending-up' | fonticon"></label>
+        <label textAlignment="center" class="font-weight-bold text-dark-black p-5" fontSize="25%" :textWrap="true" text="No income streams yet!"></label>
+        <label textAlignment="center" class="text-light-black p-5" fontSize="20%" :textWrap="true" text="Hit the + button to add known income streams"></label>
+      </StackLayout>
       <ScrollView rowSpan="2" row="1">
         <StackLayout>
           <ActivityIndicator verticalAlignment="center" textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>

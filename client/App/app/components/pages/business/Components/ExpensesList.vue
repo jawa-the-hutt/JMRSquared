@@ -11,6 +11,12 @@
         </GridLayout>
       </CardView>
       <Fab @tap="AddBusinessExpense" row="1" icon="res://ic_add_white_24dp" class="fab-button fixedBtn"></Fab>
+  
+      <StackLayout rowSpan="2" row="1" @tap="GetBusinessExpenses()" v-if="expenses.length == 0 && !isLoading" class="p-x-15 p-5 text-dark-black" verticalAlignment="center">
+        <label textAlignment="center" class="mdi p-5" fontSize="50%" :text="'mdi-trending-down' | fonticon"></label>
+        <label textAlignment="center" class="font-weight-bold text-dark-black p-5" fontSize="25%" :textWrap="true" text="No expenses yet!"></label>
+        <label textAlignment="center" class="text-light-black p-5" fontSize="20%" :textWrap="true" text="Hit the + button to add known expenses"></label>
+      </StackLayout>
       <ScrollView rowSpan="2" row="1">
         <StackLayout>
           <ActivityIndicator verticalAlignment="center" textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>
@@ -27,7 +33,7 @@
       </ScrollView>
       <CardView row="2" margin="15" v-if="expenses.filter(v => v.value) && expenses.filter(v => v.value).length > 0" elevation="20">
         <StackLayout>
-           <GridLayout class="m-x-15 m-y-5" rows="auto,auto" columns="*,*">
+          <GridLayout class="m-x-15 m-y-5" rows="auto,auto" columns="*,*">
             <label row="0" col="0" class="font-weight-bold" textAlignment="center" text="Total"></label>
             <label row="1" col="0" class="font-weight-bold text-light-red summaryStats" :text="`R${expenses.filter(v => v.value).map(v => v.value).reduce(add)}`" :class="{'visible':true}" fontSize="15%" vertialAlignment="center" textAlignment="center"></label>
             <label row="0" col="1" class="font-weight-bold" textAlignment="center" text="Transactions"></label>

@@ -40,6 +40,12 @@
           <ActivityIndicator v-if="!Notifications" row="3" col="0" colSpan="3" textAlignment="center" verticalAlignment="center" :busy="!Notifications"></ActivityIndicator>
   
           <Fab @tap="GoTo(sendNotificationPage)" row="3" col="0" colSpan="3" icon="res://ic_bell_plus_white_24dp" class="fab-button fixedBtn"></Fab>
+          
+          <StackLayout row="3" col="0" colSpan="3" @tap="refreshList($event)" v-if="Notifications && Notifications.length == 0 && !isLoading" class="p-x-15 p-5 text-dark-black" verticalAlignment="center">
+            <label textAlignment="center" class="mdi p-5" fontSize="50%" :text="'mdi-bell' | fonticon"></label>
+            <label textAlignment="center" class="font-weight-bold text-dark-black p-5" fontSize="22%" :textWrap="true" text="No notifications!"></label>
+            <label textAlignment="center" class="text-light-black p-5" fontSize="17%" :textWrap="true" :text="notificationBlankMessage"></label>
+          </StackLayout>
           <PullToRefresh row="3" col="0" colSpan="3" @refresh="refreshList($event)">
             <ScrollView v-if="Notifications">
               <StackLayout>
@@ -91,6 +97,7 @@ export default {
       isMainScreen: false,
       selectedScreen: "",
       selectedNotification: null,
+      notificationBlankMessage: "",
       cards: [
         {
           text: "new new 86",
@@ -109,6 +116,21 @@ export default {
     };
   },
   mounted() {
+    var rand = Math.floor(Math.random() * 10);
+    var randomQoutes = [
+      "You can view your previous transactions in the mean time",
+      "You can send out a notification to your partners",
+      "You can analyse your earnings and targets on Stats",
+      "Add a new transaction in the mean-time",
+      "Visit your settings and tweak your business to be how you like it to be",
+      "You can manage your partners in the mean-time",
+      "Success is not final; failure is not fatal: It is the courage to continue that counts.",
+      "Success usually comes to those who are too busy to be looking for it.",
+      "Opportunities don't happen. You create them.",
+      "If you are not willing to risk the usual, you will have to settle for the ordinary."
+    ];
+    this.notificationBlankMessage = randomQoutes[rand];
+
     this.businessPartner = {
       title: "Partners",
       isToParent: false,
