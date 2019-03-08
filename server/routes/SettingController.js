@@ -68,9 +68,11 @@ router.post("/options/reset/all/business/settings", async (req, res) => {
       } else {
         business.settings = [];
       }
+      count++;
       business.markModified("settings");
       var saved = await business.save();
     });
+    return res.send(`Successfully cleared settings for ${count} businesses`);
   } catch (err) {
     return res.status(512).send(err.message);
   }

@@ -204,11 +204,11 @@ router.post("/add", async (req, res) => {
 
                         if (!req.body.partnerID) {
                             try {
-                                var message = `Hi ${admin.fullName} ${admin.userName} and welcome to JMRSquared. \n\nYou have been added as a ${admin.role} of a business called ${business.name}\n\nUse the following details to login \n\nContact Numbers: ${req.body.numbers}\n\nPassword: ${admin.pass}`;
+                                var message = `Hi ${admin.fullName} ${admin.userName} and welcome to JMRSquared. \n\nYou have been added as a ${admin.role} of a business called ${business.name}\n\nUse the following details to login \n\nContact Numbers: ${req.body.numbers}\n\nPassword: ${admin.pass}\n\nDownload the app here\n\nhttps://play.google.com/store/apps/details?id=com.jmrsquared.jmrsquaredapp`;
                                 var smsResponse = await smsProvider.sendSMS(req.body.numbers, message);
                                 if (smsResponse) {
                                     var payload2 = helper.makePayload(`Your new ${admin.role} was notified successfully`, `We sent an sms to ${admin.fullName ? admin.fullName : admin.userName } with their login details to the system.`, {
-                                        link: ``,
+                                        link: "",
                                         props: "",
                                         deactive: 'true'
                                     });
@@ -218,7 +218,7 @@ router.post("/add", async (req, res) => {
                                 }
                             } catch (err) {
                                 var payload2 = helper.makePayload(`Unable to notify ${admin.fullName ? admin.fullName : admin.userName }`, `We were unable to sent an sms to ${admin.fullName ? admin.fullName : admin.userName } that contains their login details to the system.`, {
-                                    link: ``,
+                                    link: "",
                                     props: "",
                                     deactive: 'true'
                                 });
