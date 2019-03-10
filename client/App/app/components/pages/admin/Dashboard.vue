@@ -3,7 +3,9 @@
     <GridLayout rows="auto,auto,*">
       <CardView class="m-b-5" row="0" textAlignment="center" shadowOpacity="0.2" shadowRadius="50" elevation="20">
         <GridLayout class="p-5 bg-dark-blue" rows="auto,auto" columns="auto,*,auto">
-          <Image row="0" rowSpan="2" col="0" verticalAlignment="center" width="70" height="70" class="circle" stretch="aspectFill" :src="user.profilePic ? user.profilePic : $store.state.settings.defaultProfilePic" borderRadius="50%" />
+        <Ripple row="0" rowSpan="2" col="0" @tap="goTo('/admin/profile')">
+          <Image verticalAlignment="center" width="70" height="70" class="circle" stretch="aspectFill" :src="user.profilePic ? user.profilePic : $store.state.settings.defaultProfilePic" borderRadius="50%" />
+        </Ripple>
           <label row="0" verticalAlignment="center" col="1" fontSize="18%" class="p-x-15 text-white font-weight-bold text-mute" :text="user.userName"></label>
           <Label row="1" verticalAlignment="center" col="1" fontSize="15%" class="p-x-15 text-white" :text="user.email"></Label>
           <Ripple rowSpan="2" class="p-x-15" @tap="logOut()" verticalAlignment="center" col="2" height="100%" borderRadius="50">
@@ -103,6 +105,9 @@ export default {
     }, 5000);
   },
   methods: {
+    goTo(link) {
+      this.navigate(link);
+    },
     pageLoaded(args = null) {
       this.layouts = [];
       this.isLoaded = true;

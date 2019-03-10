@@ -5,6 +5,7 @@ import Register from '../components/pages/main/Register.vue'
 // Admin
 import AdminDashboard from '../components/pages/admin/Dashboard.vue'
 import EditDetails from '../components/pages/admin/EditDetails.vue'
+import Profile from '../components/pages/admin/Profile.vue'
 
 // Business
 import AddBusiness from '../components/pages/business/AddBusiness.vue'
@@ -82,6 +83,16 @@ router.routes = {
     component: AdminDashboard,
     meta: {
       title: 'Admin Dashboard',
+      authLevel: 3,
+      source: null
+    },
+  },
+  '/admin/profile': {
+    name: 'adminProfile',
+    path: '/admin/profile',
+    component: Profile,
+    meta: {
+      title: 'Admin Profile',
       authLevel: 3,
       source: null
     },
