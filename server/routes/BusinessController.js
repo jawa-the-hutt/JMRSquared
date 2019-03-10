@@ -506,4 +506,17 @@ router.post("/transaction/add", auth.required, async (req, res, next) => {
     });
 });
 
+router.post("/remove/:businessId", auth.required, async (req, res, next) => {
+    var businessID = req.params.businessId;
+    try{
+     var business = await Business.findById(businessID);
+     if(!business) return res.status(512).send("Invalid business");
+     business.removed = true;
+     await business.save();
+     return res.send("Business removed successfully");
+    }catch(err){
+        return res.status(512).send(err.message);
+    }
+});
+
 module.exports = router;

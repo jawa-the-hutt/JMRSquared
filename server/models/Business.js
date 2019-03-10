@@ -54,6 +54,18 @@ const BusinessSchema = new mongoose.Schema({
     }
 });
 
+BusinessSchema.pre('find', function() {
+    this.where({removed: false});
+});
+
+BusinessSchema.pre('findById', function() {
+    this.where({removed: false});
+});
+
+BusinessSchema.pre('findOne', function() {
+    this.where({removed: false});
+});
+
 BusinessSchema.methods.findSimilarTypes = function (cb) {
     return this.model('Animal').find({
         type: this.type
