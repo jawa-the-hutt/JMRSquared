@@ -86,23 +86,6 @@ export default {
     if (!this.isLoaded) {
       this.pageLoaded();
     }
-    setTimeout(() => {
-      const testing = this.TNS_ENV !== "production";
-      this.$firebase.admob
-        .showBanner({
-          size: this.$firebase.admob.AD_SIZE.SMART_BANNER, // see firebase.admob.AD_SIZE for all options
-          margins: {
-            top: 10
-          },
-          androidBannerId: "ca-app-pub-4924835910036108~3001656373",
-          iosBannerId: "ca-app-pub-4924835910036108~3001656373",
-          testing: testing, // when not running in production set this to true, Google doesn't like it any other way
-          iosTestDeviceIds: [],
-          keywords: ["business", "money", "cash", "rich", "free", "job", "work"] // add keywords for ad targeting
-        })
-        .then(() => {})
-        .catch(errorMessage => {});
-    }, 5000);
   },
   methods: {
     goTo(link) {
@@ -125,6 +108,27 @@ export default {
       this.$api
         .getAllBusinessesForUser(this.$store.state.cache.cachedAdmin._id)
         .then(results => {
+          const testing = this.TNS_ENV !== "production";
+          this.$firebase.admob.showBanner({
+            size: this.$firebase.admob.AD_SIZE.SMART_BANNER, // see firebase.admob.AD_SIZE for all options
+            margins: {
+              bottom: 10
+            },
+            androidBannerId: "ca-app-pub-4924835910036108/2235369615",
+            iosBannerId: "ca-app-pub-4924835910036108/2235369615",
+            testing: testing, // when not running in production set this to true, Google doesn't like it any other way
+            iosTestDeviceIds: [],
+            keywords: [
+              "business",
+              "money",
+              "cash",
+              "rich",
+              "free",
+              "job",
+              "work"
+            ] // add keywords for ad targeting
+          });
+
           var count = results.length;
           if (count > this.layouts.length) {
             count = this.layouts.length;
