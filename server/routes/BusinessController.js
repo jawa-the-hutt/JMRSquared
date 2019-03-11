@@ -352,19 +352,21 @@ router.post("/add/business", auth.required, (req, res, next) => {
     });
 });
 
-router.post("/remove/business", auth.required, async (req, res, next) => {
+router.post("/remove/business", auth.required, (req, res, next) => {
   var adminID = req.body.adminID;
   var businessID = req.body.businessID;
 
   try {
-    var business = await Business.findById(businessID);
-    if (business == null || !business.admin) {
-      return res.status(512).send("Invalid business provided");
-    }
-    business.admin = business.admin.filter(b => b.id != adminID);
-    business.save(function(err) {
-      if (err) return res.status(512).send(err);
-      res.send("Removed link from business");
+    console.log(businessID);
+    Business.findById(businessID).then(business => {
+      if (business == null) {
+        return res.status(512).send("Invalid business provided");
+      }
+      business.admin = business.admin.filter(b => b.id != adminID);
+      business.save(function(err) {
+        if (err) return res.status(512).send(err);
+        res.send("Removed link from business");
+      });
     });
   } catch (err) {
     return res.status(512).send("Unable to remove business");
