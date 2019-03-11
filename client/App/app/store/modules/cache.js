@@ -87,7 +87,6 @@ const mutations = {
   },
   cacheBusinesses(state, obj) {
     var cacheString = state.BusinessesDBString;
-
     let documentID = obj.appSettings.getString(cacheString);
     if (documentID == null) {
       var doc = obj.db.createDocument({
@@ -147,6 +146,18 @@ const mutations = {
       state.lastUpdated = new Date();
     }
 
+  },
+  clearCachedBusiness(state, obj) {
+    var cacheString = state.BusinessesDBString;
+
+    let documentID = obj.appSettings.getString(cacheString);
+    if (documentID != null) {
+      obj.db.deleteDocument(documentID);
+      obj.appSettings.remove(cacheString);
+      console.log("Document exists (businesses) , " + documentID + " , was removed");
+    }
+    state.cachedBusinesses = [];
+    state.lastUpdated = new Date();
   }
 };
 

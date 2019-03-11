@@ -595,6 +595,27 @@ export default class API {
         });
     }
 
+    deleteBusiness(adminID, businessID) {
+        return new Promise((resolve, reject) => {
+            http
+                .request(
+                    this.makePost("/b/remove/business", {
+                        adminID,
+                        businessID
+                    })
+                )
+                .then(result => {
+                    var answer = this.handleResponse(result);
+                    if (answer) {
+                        return resolve(result);
+                    }
+                })
+                .catch(err => {
+                    return reject(err);
+                });
+        });
+    }
+
     addBusinessExpense(businessID, value) {
         return new Promise((resolve, reject) => {
             http

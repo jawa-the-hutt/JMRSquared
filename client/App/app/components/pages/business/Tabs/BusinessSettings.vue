@@ -17,10 +17,10 @@
       <CardView row="1" margin="2" elevation="5">
         <ScrollView>
           <StackLayout>
-             <GridLayout v-if="settings.length > 0" class="m-10" rows="auto" columns="*,auto">
+            <GridLayout v-if="settings.length > 0" class="m-10" rows="auto" columns="*,auto">
               <label row="0" col="0" class="h3 font-weight-bold text-mute text-dark-blue" text="Manage"></label>
             </GridLayout>
-            
+  
             <Ripple v-for="(option,i) in options" :key="i" @tap="GoTo(option)">
               <GridLayout class="p-10" rows="auto,auto" columns="auto,*">
                 <Label row="0" rowSpan="2" col="0" fontSize="25%" verticalAlignment="center" borderRadius="50%" textAlignment="center" class="h2 mdi" :text="'mdi-' + option.icon | fonticon"></Label>
@@ -45,7 +45,7 @@
             <GridLayout v-if="settings.length > 0" class="m-10" rows="auto" columns="*,auto">
               <label row="0" col="0" class="h3 font-weight-bold text-mute text-dark-blue" text="Settings"></label>
             </GridLayout>
-            
+  
             <StackLayout v-for="(setting,i) in settings" :key="i">
               <GridLayout class="m-10" rows="auto,auto" columns="auto,*,auto">
                 <Label row="0" rowSpan="2" col="0" fontSize="25%" verticalAlignment="center" borderRadius="50%" textAlignment="center" class="h2 mdi" :text="'mdi-' + setting.icon | fonticon"></Label>
@@ -65,11 +65,19 @@
               </StackLayout>
             </StackLayout>
   
+            <Ripple @tap="DeleteBusiness()">
+              <GridLayout class="p-10" rows="auto,auto" columns="auto,*">
+                <Label row="0" rowSpan="2" col="0" fontSize="25%" verticalAlignment="center" borderRadius="50%" textAlignment="center" class="h2 mdi" :text="'mdi-delete' | fonticon"></Label>
+                <label row="0" col="1" class="p-x-15 h3 font-weight-bold" text="Remove this business"></label>
+                <label row="1" col="1" class="p-x-15 h4" text="You will no longer see this business"></label>
+              </GridLayout>
+            </Ripple>
+  
             <StackLayout v-if="targets.length > 0" width="100%" class="hr-light"></StackLayout>
             <GridLayout v-if="targets.length > 0" class="m-10" rows="auto" columns="*,auto">
               <label row="0" col="0" class="h3 font-weight-bold text-mute text-dark-blue" text="Targets"></label>
-            </GridLayout> 
-
+            </GridLayout>
+  
             <StackLayout>
               <GridLayout class="m-10" rows="auto,auto" columns="auto,*,auto,auto" v-for="(target,i) in targets" :key="i">
                 <Label row="0" rowSpan="2" col="0" fontSize="25%" verticalAlignment="center" borderRadius="50%" textAlignment="center" class="h2 mdi" :text="'mdi-' + target.icon | fonticon"></Label>
@@ -247,6 +255,40 @@ export default {
       if (option.link) {
         this.navigate(option.link, option.props);
       }
+    },
+    DeleteBusiness() {
+      confirm({
+        title: "Are you sure you want to remove this business",
+        message: "This can not be recovered",
+        okButtonText: "Yes",
+        cancelButtonText: "No"
+      }).then(result => {
+        if (result) {
+          this.$api
+            .deleteBusiness(this.business._id)
+            .then(result => {
+              this.$store.commit("clearCachedBusiness", {
+                db: this.$db,
+                api: this.$api,
+                appSettings: this.appSettings,
+                doc: "businesses"
+              });
+              this.$feedback.success({
+                title: "Business removed",
+                message: "You are no longer linked to this business"
+              });
+              this.navigate("/admin/dashboard", null, {
+                clearHistory: true
+              });
+            })
+            .catch(err => {
+              this.$feedback.error({
+                title: "Unable to remove the business",
+                message: err.message
+              });
+            });
+        }
+      });
     }
   }
 };
