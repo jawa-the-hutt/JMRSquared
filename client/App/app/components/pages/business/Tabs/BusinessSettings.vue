@@ -265,7 +265,10 @@ export default {
       }).then(result => {
         if (result) {
           this.$api
-            .deleteBusiness(this.business._id)
+            .deleteBusiness(
+              this.$store.state.cache.cachedAdmin._id,
+              this.business._id
+            )
             .then(result => {
               this.$store.commit("clearCachedBusiness", {
                 db: this.$db,
