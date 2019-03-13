@@ -241,6 +241,35 @@ router.post("/add", async (req, res) => {
     });
 });
 
+router.get("get/previous/devices/for/:adminID", auth.required, (req, res, next) => {
+    var adminID = req.params.adminID;
+    Admin.findById(adminID)
+        .then(admin => {
+            if (admin == null) {
+                return res.status(512).send("Invalid user");
+            }
+
+            if (!admin.deviceTokens) return res.json([]);
+            var devices = admin.deviceTokens.filter(d => d && d.deviceInfo).map(device => {
+                return {
+                    icon: "mdi-cellphone",
+                    lastActiveDate: device.lastActiveDate,
+                    deviceType: device.deviceInfo.deviceType,
+                    model: device.deviceInfo.model,
+                    manufacturer: device.deviceInfo.manufacturer,
+                    os: device.deviceInfo.os,
+                    osVersion: device.deviceInfo.osVersion,
+                    sdkVersion: device.deviceInfo.sdkVersion
+                };
+            });
+            devices.reverse();
+            return res.json(devices);
+        })
+        .catch(err => {
+            return res.status(512).send(err.message);
+        });
+});
+
 router.post("/device/token/add", function (req, res) {
     var adminID = req.body.adminID;
     var deviceToken = req.body.deviceToken;

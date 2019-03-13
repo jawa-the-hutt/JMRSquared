@@ -84,10 +84,6 @@ const AdminSchema = new mongoose.Schema({
                 type: String,
                 default: null
             },
-            manufacturer: {
-                type: String,
-                default: null
-            },
             os: {
                 type: String,
                 default: null
