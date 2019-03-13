@@ -214,17 +214,21 @@ router.get("/get/all/:type/for/:business", auth.required, (req, res, next) => {
         if (!business.admin) res.json([]);
         var partners = business.admin
           .toObject()
+          .filter(b => b && b.id)
           .map(b => {
             b.id.role = b.authority;
             return b.id;
-          })
-          .filter(b => b && b._id);
+          });
 
         for (const partner of partners) {
           var transaction = await Transaction.findOne({
               client: mongoose.Types.ObjectId(partner._id)
             },
-            "client date amount"
+            "client date amount", {
+              sort: {
+                'date': -1
+              }
+            }
           );
 
           partner.lastEventDate = transaction ? transaction.date : null;
