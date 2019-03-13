@@ -19,18 +19,15 @@ router.get("/all/for/:userid", auth.required, (req, res, next) => {
         return res
           .status(512)
           .send("Admin of id " + adminID + " does not exist");
-      Business.find(
-        {
-          "admin.id": adminID
-        },
-        {
-          logo: 0,
-          transactions: 0,
-          settings: 0,
-          categories: 0,
-          targets: 0
-        }
-      ).then(businesses => {
+      Business.find({
+        "admin.id": adminID
+      }, {
+        logo: 0,
+        transactions: 0,
+        settings: 0,
+        categories: 0,
+        targets: 0
+      }).then(businesses => {
         if (businesses == null)
           return res.status(512).send("Error : 9032rtu834g9erbo");
         res.json(businesses);
@@ -56,13 +53,12 @@ router.get("/get/:business/for/:userid", auth.required, (req, res, next) => {
           .send("You are not part of the requested business");
       }
 
-      Transaction.find(
-        {
-          businessID: businessID,
-          removed: false
-        },
-        "-proof"
-      )
+      Transaction.find({
+            businessID: businessID,
+            removed: false
+          },
+          "-proof"
+        )
         .then(transactions => {
           var returnedBusiness = business.toObject();
           const revenues = helper.GetTransactionProfitAndRevenue(transactions);
@@ -107,11 +103,11 @@ router.post("/set/business/:type", auth.required, (req, res, next) => {
   if (type == "settings") {
     var settingID = req.body.settingID;
     Business.findById(businessID, {
-      logo: 0,
-      transactions: 0,
-      categories: 0,
-      targets: 0
-    })
+        logo: 0,
+        transactions: 0,
+        categories: 0,
+        targets: 0
+      })
       .then(business => {
         if (!business)
           return res
@@ -134,7 +130,7 @@ router.post("/set/business/:type", auth.required, (req, res, next) => {
           return res.status(512).send("Setting not changed, try again later.");
         }
 
-        business.save(function(err) {
+        business.save(function (err) {
           if (err) return res.status(512).send(err);
           res.send("Business setting successfully saved");
         });
@@ -146,11 +142,11 @@ router.post("/set/business/:type", auth.required, (req, res, next) => {
     var targetID = req.body.targetID;
     var enable = req.body.enable;
     Business.findById(businessID, {
-      logo: 0,
-      transactions: 0,
-      settings: 0,
-      categories: 0
-    })
+        logo: 0,
+        transactions: 0,
+        settings: 0,
+        categories: 0
+      })
       .then(business => {
         if (!business)
           return res
@@ -161,7 +157,7 @@ router.post("/set/business/:type", auth.required, (req, res, next) => {
         business.targets.find(t => t._id == targetID).enable = enable;
 
         business.markModified("targets");
-        business.save(function(err) {
+        business.save(function (err) {
           if (err) return res.status(512).send(err);
           res.send("Business targets successfully saved");
         });
@@ -172,11 +168,11 @@ router.post("/set/business/:type", auth.required, (req, res, next) => {
   } else {
     value = value && value[0].toUpperCase() + value.slice(1).toLowerCase();
     Business.findById(businessID, {
-      logo: 0,
-      transactions: 0,
-      settings: 0,
-      targets: 0
-    })
+        logo: 0,
+        transactions: 0,
+        settings: 0,
+        targets: 0
+      })
       .then(business => {
         if (!business)
           return res
@@ -187,7 +183,7 @@ router.post("/set/business/:type", auth.required, (req, res, next) => {
           business.categories.push(value);
         }
 
-        business.save(function(err) {
+        business.save(function (err) {
           if (err) return res.status(512).send(err);
           res.send(`Business ${type} successfully saved`);
         });
@@ -203,12 +199,12 @@ router.get("/get/all/:type/for/:business", auth.required, (req, res, next) => {
   var type = req.params.type;
   if (type == "partners") {
     Business.findById(businessID, {
-      logo: 0,
-      transactions: 0,
-      settings: 0,
-      categories: 0,
-      targets: 0
-    })
+        logo: 0,
+        transactions: 0,
+        settings: 0,
+        categories: 0,
+        targets: 0
+      })
       .populate("admin.id", "-deviceTokens")
       .then(async business => {
         if (business == null)
@@ -218,12 +214,14 @@ router.get("/get/all/:type/for/:business", auth.required, (req, res, next) => {
         if (!business.admin) res.json([]);
         var partners = business.admin
           .toObject()
-          .map(b => b.id)
+          .map(b => {
+            b.id.role = b.authority;
+            return b.id;
+          })
           .filter(b => b && b._id);
 
         for (const partner of partners) {
-          var transaction = await Transaction.findOne(
-            {
+          var transaction = await Transaction.findOne({
               client: mongoose.Types.ObjectId(partner._id)
             },
             "client date amount"
@@ -240,12 +238,11 @@ router.get("/get/all/:type/for/:business", auth.required, (req, res, next) => {
       });
   } else {
     type = type == "expenses" ? "MONEYOUT" : "MONEYIN";
-    Transaction.find(
-      {
-        businessID: businessID
-      },
-      "-proof"
-    )
+    Transaction.find({
+          businessID: businessID
+        },
+        "-proof"
+      )
       .then(transactions => {
         if (!transactions) transactions = [];
         var returnOBJs = [];
@@ -266,11 +263,11 @@ router.get("/get/all/:type/for/:business", auth.required, (req, res, next) => {
             }
           });
         Business.findById(businessID, {
-          logo: 0,
-          transactions: 0,
-          settings: 0,
-          targets: 0
-        })
+            logo: 0,
+            transactions: 0,
+            settings: 0,
+            targets: 0
+          })
           .then(business => {
             business.categories
               .filter(v => !returnOBJs.find(t => t.title == v))
@@ -312,12 +309,10 @@ router.post("/add/business", auth.required, (req, res, next) => {
           .send("Admin of id " + adminID + " does not exist");
       var business = new Business({
         _id: mongoose.Types.ObjectId(),
-        admin: [
-          {
-            id: adminID,
-            authority: adminAuthority && adminAuthority.toUpperCase()
-          }
-        ],
+        admin: [{
+          id: adminID,
+          authority: adminAuthority && adminAuthority.toUpperCase()
+        }],
         name: _business.name,
         logo: _business.logo,
         description: _business.description,
@@ -327,7 +322,7 @@ router.post("/add/business", auth.required, (req, res, next) => {
       if (!business.name) {
         return res.status(512).send("A business name is required");
       }
-      business.save(function(err) {
+      business.save(function (err) {
         if (err) {
           if (
             err.name == "ValidationError" &&
@@ -352,18 +347,17 @@ router.post("/add/business", auth.required, (req, res, next) => {
     });
 });
 
-router.post("/remove/business", auth.required, (req, res, next) => {
+router.post("/unassign/from/business", auth.required, (req, res, next) => {
   var adminID = req.body.adminID;
   var businessID = req.body.businessID;
 
   try {
-    console.log(businessID);
     Business.findById(businessID).then(business => {
       if (business == null) {
         return res.status(512).send("Invalid business provided");
       }
       business.admin = business.admin.filter(b => b.id != adminID);
-      business.save(function(err) {
+      business.save(function (err) {
         if (err) return res.status(512).send(err);
         res.send("Removed link from business");
       });
@@ -403,7 +397,7 @@ router.post("/assign/to/business", auth.required, (req, res, next) => {
           assignedBY: assignedBY,
           authority: adminAuthority && adminAuthority.toUpperCase()
         });
-        business.save(function(err) {
+        business.save(function (err) {
           if (err) return res.status(512).send(err);
           res.send("Client successfully linked to business");
         });
@@ -422,15 +416,14 @@ router.post(
     var businessID = req.params.businessId;
     var existing = req.body.existing;
     if (!existing) existing = [];
-    Transaction.find(
-      {
-        businessID: businessID,
-        _id: {
-          $nin: existing
-        }
-      },
-      "-proof"
-    )
+    Transaction.find({
+          businessID: businessID,
+          _id: {
+            $nin: existing
+          }
+        },
+        "-proof"
+      )
       .sort({
         date: -1
       })
@@ -485,7 +478,7 @@ router.post("/transaction/add", auth.required, async (req, res, next) => {
   transaction.category =
     transaction.category &&
     transaction.category[0].toUpperCase() +
-      transaction.category.slice(1).toLowerCase();
+    transaction.category.slice(1).toLowerCase();
 
   var business = await Business.findById(transaction.businessID, {
     logo: 0,
@@ -501,7 +494,7 @@ router.post("/transaction/add", auth.required, async (req, res, next) => {
     !business.categories.find(v => v == transaction.category)
   ) {
     business.categories.push(transaction.category);
-    business.save(function(err) {
+    business.save(function (err) {
       if (err) {
         return res
           .status(512)
@@ -523,7 +516,7 @@ router.post("/transaction/add", auth.required, async (req, res, next) => {
     }
   }
 
-  transaction.save(function(err) {
+  transaction.save(function (err) {
     if (err) return res.status(512).send(err);
     // TODO : Notify the other admins about this transaction.
     if (business && business.admin) {
