@@ -151,6 +151,7 @@ router.post("/add", async (req, res) => {
         var _admin = await Admin.findById(req.body.partnerID);
         if (_admin) {
             admin = _admin;
+            admin.role = req.body.role.toUpperCase();
         }
     }
 
