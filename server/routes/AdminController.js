@@ -241,7 +241,7 @@ router.post("/add", async (req, res) => {
     });
 });
 
-router.get("get/previous/devices/for/:adminID", auth.required, (req, res, next) => {
+router.get("/get/previous/devices/for/:adminID", auth.required, (req, res, next) => {
     var adminID = req.params.adminID;
     Admin.findById(adminID)
         .then(admin => {

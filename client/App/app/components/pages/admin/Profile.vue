@@ -23,11 +23,12 @@
                 <label row="1" col="1" fontSize="15" textAlignment="left" :text="userInfo.body"></label>
               </GridLayout>
               <label v-show="Devices && Devices.length > 0" class="text-dark-black p-l-20 p-t-20 p-b-10" verticalAlignment="center" fontSize="18" style="opacity:0.6" text="Previous devices"></label>
-              <GridLayout class="text-dark-black p-x-20 p-y-15" rows="auto,auto" columns="auto,*,auto" v-for="(device,index) in Devices" :key="index">
-                <label row="0" col="0" class="mdi text-dark-black m-r-20" rowSpan="2" verticalAlignment="center" textAlignment="left" fontSize="35" :text="device.icon | fonticon"></label>
+              <GridLayout class="text-dark-black p-x-20 p-y-15" rows="auto,auto,auto" columns="auto,*,auto" v-for="(device,index) in Devices" :key="index">
+                <label row="0" col="0" class="mdi text-dark-black m-r-20" rowSpan="3" verticalAlignment="center" textAlignment="left" fontSize="35" :text="device.icon | fonticon"></label>
                 <label row="0" col="1" class="font-weight-bold" fontSize="15" textAlignment="left" :text="device.manufacturer"></label>
                 <label row="0" col="2" class="font-weight-bold p-x-10 p-b-2" fontSize="15" rowSpan="2" borderRadius="50" style="color:White;background-color:black;" verticalAlignment="center" textAlignment="center" :text="device.model"></label>
-                <label row="1" col="1" fontSize="15" textAlignment="left" :text="getMoment(device.lastActiveDate).fromNow()"></label>
+                <label row="1" col="1" fontSize="15" :textWrap="true" textAlignment="left" :text="device.os + ' ' + device.osVersion"></label>
+                <label row="2" col="1" fontSize="15" textAlignment="left" :text="getMoment(device.lastActiveDate).fromNow()"></label>
               </GridLayout>
             </StackLayout>
           </ScrollView>
@@ -161,7 +162,7 @@ export default {
     onBusinessTap(item) {},
     choosePic() {
       let context = imagepicker.create({
-        mode: "single" // use "multiple" for multiple selection
+        mode: "single"
       });
       var tempPic = this.profilePic;
       this.profilePic = null;
