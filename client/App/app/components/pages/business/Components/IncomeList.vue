@@ -12,24 +12,26 @@
       </CardView>
   
       <Fab @tap="AddBusinessIncome" row="1" icon="res://ic_add_white_24dp" class="fab-button fixedBtn"></Fab>
-
+  
       <StackLayout rowSpan="2" row="1" @tap="GetBusinessIncomes()" v-if="incomes.length == 0 && !isLoading" class="p-x-15 p-5 text-dark-black" verticalAlignment="center">
         <label textAlignment="center" class="mdi p-5" fontSize="50%" :text="'mdi-trending-up' | fonticon"></label>
         <label textAlignment="center" class="font-weight-bold text-dark-black p-5" fontSize="25%" :textWrap="true" text="No income streams yet!"></label>
         <label textAlignment="center" class="text-light-black p-5" fontSize="20%" :textWrap="true" text="Hit the + button to add known income streams"></label>
       </StackLayout>
-      <ScrollView rowSpan="2" row="1">
-        <StackLayout>
-          <ActivityIndicator verticalAlignment="center" textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>
-          <Ripple v-show="!isLoading" v-for="(income,i) in incomes" :key="i">
-            <GridLayout class="p-10" rows="auto,auto" columns="*,auto">
-              <label row="0" col="0" fontSize="15%" class="p-x-15 font-weight-bold" :text="income.title"></label>
-              <label row="1" col="0" fontSize="15%" class="p-x-15 text-dark-blue" :text="`R${income.value}`"></label>
-              <Label row="1" col="1" textAlignment="right" fontSize="15%" textWrap="true" verticalAlignment="center" :text="`${income.count} transactions`" />
-            </GridLayout>
-          </Ripple>
-        </StackLayout>
-      </ScrollView>
+      <PullToRefresh rowSpan="2" row="1" @refresh="refreshList($event)">
+        <ScrollView>
+          <StackLayout>
+            <ActivityIndicator verticalAlignment="center" textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>
+            <Ripple v-show="!isLoading" v-for="(income,i) in incomes" :key="i">
+              <GridLayout class="p-10" rows="auto,auto" columns="*,auto">
+                <label row="0" col="0" fontSize="15%" class="p-x-15 font-weight-bold" :text="income.title"></label>
+                <label row="1" col="0" fontSize="15%" class="p-x-15 text-dark-blue" :text="`R${income.value}`"></label>
+                <Label row="1" col="1" textAlignment="right" fontSize="15%" textWrap="true" verticalAlignment="center" :text="`${income.count} transactions`" />
+              </GridLayout>
+            </Ripple>
+          </StackLayout>
+        </ScrollView>
+      </PullToRefresh>
       <CardView row="2" margin="15" v-if="incomes.filter(v => v.value) && incomes.filter(v => v.value).length > 0" elevation="20">
         <StackLayout verticalAlignment="center">
           <GridLayout class="m-x-15 m-y-5" rows="auto,auto" columns="*,*">
@@ -61,15 +63,24 @@ export default {
     add(a, b) {
       return a + b;
     },
-    GetBusinessIncomes() {
+    refreshList(args) {
+      this.GetBusinessIncomes(args);
+    },
+    GetBusinessIncomes(args = null) {
       this.isLoading = true;
       this.$api
         .getBusinessIncomes(this.businessId)
         .then(incomes => {
+          if (args) {
+            args.object.refreshing = false;
+          }
           this.isLoading = false;
           this.incomes = incomes;
         })
         .catch(err => {
+          if (args) {
+            args.object.refreshing = false;
+          }
           this.isLoading = false;
           this.$feedback.error({
             title: "Unable to load your partners",

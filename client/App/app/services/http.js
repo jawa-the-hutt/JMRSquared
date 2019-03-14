@@ -337,6 +337,22 @@ export default class API {
         });
     }
 
+    getPreviousUserDevices(adminID) {
+        return new Promise((resolve, reject) => {
+            http
+                .getJSON(this.makeGet(`/a/get/previous/devices/for/${adminID}`))
+                .then(result => {
+                    var answer = this.handleResponse(result);
+                    if (answer) {
+                        return resolve(result);
+                    }
+                })
+                .catch(err => {
+                    return reject(err);
+                });
+        });
+    }
+
     addPartner(
         email,
         pass,
@@ -363,6 +379,25 @@ export default class API {
                         adminID
                     })
                 )
+                .then(result => {
+                    var answer = this.handleResponse(result);
+                    if (answer) {
+                        return resolve(result);
+                    }
+                })
+                .catch(err => {
+                    return reject(err);
+                });
+        });
+    }
+
+    unassignFromBusiness(adminID, businessID) {
+        return new Promise((resolve, reject) => {
+            http
+                .request(this.makePost(`/b/unassign/from/business`, {
+                    businessID,
+                    adminID
+                }))
                 .then(result => {
                     var answer = this.handleResponse(result);
                     if (answer) {
@@ -581,27 +616,6 @@ export default class API {
                         adminID,
                         adminAuthority,
                         business
-                    })
-                )
-                .then(result => {
-                    var answer = this.handleResponse(result);
-                    if (answer) {
-                        return resolve(result);
-                    }
-                })
-                .catch(err => {
-                    return reject(err);
-                });
-        });
-    }
-
-    deleteBusiness(adminID, businessID) {
-        return new Promise((resolve, reject) => {
-            http
-                .request(
-                    this.makePost("/b/remove/business", {
-                        adminID,
-                        businessID
                     })
                 )
                 .then(result => {

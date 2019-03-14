@@ -135,7 +135,7 @@
       <StackLayout row="2">
         <CardView class="bg-white m-t-10 p-t-10" elevation="5" radius="10" shadowOffsetHeight="10" shadowOpacity="0.2" shadowRadius="50">
           <StackLayout>
-            <FlexboxLayout v-show="!isLoading" flexDirection="column" alignContent="flex-end" justifyContent="flex-end" width="100%">
+            <FlexboxLayout v-show="!isLoading && !loadingPartner" flexDirection="column" alignContent="flex-end" justifyContent="flex-end" width="100%">
               <GridLayout v-show="!savedPartner" rows="auto,auto" columns="*,*">
                 <Label row="0" colSpan="2" :text="txtError.length < 2 ? '' :txtError" textWrap="true" :class="`text-mute text-light-${txtError.length < 2 ? 'blue' : 'red'}`" textAlignment="center"></Label>
                 <Button row="1" col="1" @tap="submitPartner()" v-show="currentPage == 2" class="btn-primary bg-light-green" :text="`Save ${partner.username}`"></Button>
@@ -147,7 +147,7 @@
                 <Button row="1" @tap="goToPartners()" class="btn-primary bg-light-blue" :text="`Go to ${businessName} partners`"></Button>
               </GridLayout>
             </FlexboxLayout>
-            <ActivityIndicator v-show="isLoading" :busy="isLoading"></ActivityIndicator>
+            <ActivityIndicator v-show="isLoading || loadingPartner" :busy="isLoading || loadingPartner"></ActivityIndicator>
           </StackLayout>
         </CardView>
       </StackLayout>
@@ -165,11 +165,11 @@ import * as imageSource from "tns-core-modules/image-source";
 import * as imagepicker from "nativescript-imagepicker";
 
 import * as connectivity from "tns-core-modules/connectivity";
-// var keyboard = require("nativescript-keyboardshowing");
 
 export default {
   data() {
     return {
+      loadingPartner: false,
       partner: {
         _id: null,
         username: "",
@@ -256,7 +256,6 @@ export default {
         this.partner.type = type;
       }
     },
-
     pageLoaded(args) {
       this.currentPage = 0;
       var self = this;
@@ -332,55 +331,61 @@ export default {
           });
       }
     },
-    async canGoForward() {
-      this.txtError = "";
-      if (this.currentPage == 0) {
-        if (
-          isNaN(this.partner.contactNumbers) ||
-          this.partner.contactNumbers.toString().length < 10 ||
-          this.partner.contactNumbers.toString().length > 13
-        ) {
-          this.txtError = "Please provide valid contact numbers.";
-          return false;
-        } else {
-          try {
-            var user = await this.$api.getAdminByContactnumbers(
-              this.partner.contactNumbers
-            );
-            if (!user) {
-              this.partnerExists = false;
-            } else {
-              this.partnerExists = true;
-              this.partner._id = user._id;
-              this.partner.fullName = user.fullName;
-              this.partner.username = user.userName;
-              this.partner.email = user.email;
-            }
-            this.isLoading = false;
-            return true;
-          } catch (err) {
-            console.log(err);
-            this.txtError = err.message;
-            this.isLoading = false;
-            return false;
+    canGoForward() {
+      return new Promise((resolve, reject) => {
+        this.txtError = "";
+        if (this.currentPage == 0) {
+          if (
+            isNaN(this.partner.contactNumbers) ||
+            this.partner.contactNumbers.toString().length < 10 ||
+            this.partner.contactNumbers.toString().length > 13
+          ) {
+            this.txtError = "Please provide valid contact numbers.";
+            resolve(false);
           }
+          this.loadingPartner = true;
+          this.$api
+            .getAdminByContactnumbers(this.partner.contactNumbers)
+            .then(user => {
+              if (!user) {
+                this.partnerExists = false;
+              } else {
+                this.partnerExists = true;
+                this.partner._id = user._id;
+                this.partner.fullName = user.fullName;
+                this.partner.username = user.userName;
+                this.partner.email = user.email;
+              }
+              this.isLoading = false;
+              this.loadingPartner = false;
+              resolve(true);
+            })
+            .catch(err => {
+              console.log(err);
+              this.txtError = err.message;
+              this.isLoading = false;
+              this.loadingPartner = false;
+              resolve(false);
+            });
+        } else if (this.currentPage == 1) {
+          if (this.partner.username.length < 2) {
+            this.txtError = "Provide a valid partner username.";
+            resolve(false);
+          }
+          resolve(true);
+        } else if (this.currentPage == 2) {
+          resolve(true);
+        } else {
+          resolve(false);
         }
-      } else if (this.currentPage == 1) {
-        if (this.partner.username.length < 2) {
-          this.txtError = "Provide a valid partner username.";
-          return false;
-        }
-        return true;
-      } else if (this.currentPage == 2) {
-        return true;
-      } else {
-        return false;
-      }
+      });
     },
     moveForward() {
-      if (this.canGoForward()) {
-        this.currentPage++;
-      }
+      this.canGoForward().then(result => {
+        if (result) {
+          this.currentPage++;
+        }
+      });
     }
   }
 };

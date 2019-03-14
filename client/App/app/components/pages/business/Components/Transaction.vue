@@ -4,44 +4,46 @@
       <GridLayout v-show="isLoading" rows="*" columns="*">
         <ActivityIndicator verticalAlignment="center" textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>
       </GridLayout>
-      <GridLayout ref="transactionScreen" backgroundColor="white" v-if="transaction" v-show="!isLoading" rows="auto,auto,*" columns="*">
-        <CardView row="0" elevation="15">
-          <GridLayout columns="auto,*,auto" class="bg-dark-blue p-10">
-            <Ripple @tap="navigate(null)" verticalAlignment="center" borderRadius="50%">
-              <Label verticalAlignment="center" textAlignment="center" class="mdi text-white p-5" fontSize="30%" :text="'mdi-arrow-left' | fonticon"></Label>
-            </Ripple>
-            <label class="p-x-15 text-white" verticalAlignment="center" fontSize="18%" col="1" text="Transaction detail"></label>
-            <Ripple v-if="transaction" col="2" @tap="shareImage(transaction)" verticalAlignment="center" borderRadius="50%">
-              <Label verticalAlignment="center" textAlignment="center" class="mdi text-white p-5" fontSize="30%" :text="'mdi-share-variant' | fonticon"></Label>
-            </Ripple>
-          </GridLayout>
-        </CardView>
-        <StackLayout v-if="transaction" class="m-15" row="1">
-          <GridLayout rows="auto,auto,auto,auto,auto,auto,auto,auto" columns="*,auto">
-            <label class="p-b-5" row="0" col="0" text="Date"></label>
-            <label class="p-b-5" row="0" col="1" :text="getMoment(transaction.date).format('dddd , DD MMMM YYYY , HH:mm')"></label>
-            <label class="p-b-5" row="1" col="0" text="Type"></label>
-            <label class="p-b-5" row="1" col="1" :text="transaction.type == 'MONEYIN' ? 'Deposit' : 'Withdraw'"></label>
-            <label class="p-b-5" row="2" col="0" text="Category"></label>
-            <label class="p-b-5" row="2" col="1" :text="transaction.category"></label>
-            <label class="p-b-5" row="3" col="0" text="Amount"></label>
-            <label class="p-b-5" row="3" col="1" :class="{'text-dark-blue':transaction.type == 'MONEYIN','text-light-red':transaction.type == 'MONEYOUT'}"  :text="(transaction.type == 'MONEYIN' ? '+ R' : '- R') + transaction.amount"></label>
-            <label class="p-b-5" v-if="transaction.description" row="4" col="0" text="Description"></label>
-            <label class="p-b-5" v-if="transaction.description" :textWrap="true" row="4" col="1" :text="transaction.description"></label>
-            <label class="p-b-5" row="5" col="0" text="Uploaded by"></label>
-            <label class="p-b-5" row="5" col="1" :text="transaction.adminID.userName"></label>
-            <label class="p-b-5" v-if="transaction.client" row="6" col="0" text="From"></label>
-            <label class="p-b-5" v-if="transaction.client" row="6" col="1" :text="transaction.client.userName"></label>
-            <label class="p-b-5" v-if="transaction.monthOfPayment" row="7" col="0" text="Month"></label>
-            <label class="p-b-5" v-if="transaction.monthOfPayment" row="7" col="1" :text="transaction.monthOfPayment"></label>
-          </GridLayout>
-        </StackLayout>
-        <label v-if="!transaction" row="2" verticalAlignment="center" textAlignment="center" text="Invalid transaction selected."></label>
-        <label v-if="transaction && !transaction.proof" row="2" verticalAlignment="center" textAlignment="center" text="No image"></label>
-        <StackLayout @pan="onPan($event)" @doubleTap="onDoubleTap(event)" @pinch="onPinch($event)" v-if="transaction && transaction.proof" row="2" verticalAlignment="center" textAlignment="center">
-         <Image :style="zoomLevel" :src="transaction.proof" stretch="aspectFill"></Image>
-        </StackLayout>
-      </GridLayout>
+      <PullToRefresh @refresh="refreshList($event)">
+        <GridLayout ref="transactionScreen" backgroundColor="white" v-if="transaction" v-show="!isLoading" rows="auto,auto,*" columns="*">
+          <CardView row="0" elevation="15">
+            <GridLayout columns="auto,*,auto" class="bg-dark-blue p-10">
+              <Ripple @tap="navigate(null)" verticalAlignment="center" borderRadius="50%">
+                <Label verticalAlignment="center" textAlignment="center" class="mdi text-white p-5" fontSize="30%" :text="'mdi-arrow-left' | fonticon"></Label>
+              </Ripple>
+              <label class="p-x-15 text-white" verticalAlignment="center" fontSize="18%" col="1" text="Transaction detail"></label>
+              <Ripple v-if="transaction" col="2" @tap="shareImage(transaction)" verticalAlignment="center" borderRadius="50%">
+                <Label verticalAlignment="center" textAlignment="center" class="mdi text-white p-5" fontSize="30%" :text="'mdi-share-variant' | fonticon"></Label>
+              </Ripple>
+            </GridLayout>
+          </CardView>
+          <StackLayout v-if="transaction" class="m-15" row="1">
+            <GridLayout rows="auto,auto,auto,auto,auto,auto,auto,auto" columns="*,auto">
+              <label class="p-b-5" row="0" col="0" text="Date"></label>
+              <label class="p-b-5" row="0" col="1" :text="getMoment(transaction.date).format('dddd , DD MMMM YYYY , HH:mm')"></label>
+              <label class="p-b-5" row="1" col="0" text="Type"></label>
+              <label class="p-b-5" row="1" col="1" :text="transaction.type == 'MONEYIN' ? 'Deposit' : 'Withdraw'"></label>
+              <label class="p-b-5" row="2" col="0" text="Category"></label>
+              <label class="p-b-5" row="2" col="1" :text="transaction.category"></label>
+              <label class="p-b-5" row="3" col="0" text="Amount"></label>
+              <label class="p-b-5" row="3" col="1" :class="{'text-dark-blue':transaction.type == 'MONEYIN','text-light-red':transaction.type == 'MONEYOUT'}" :text="(transaction.type == 'MONEYIN' ? '+ R' : '- R') + transaction.amount"></label>
+              <label class="p-b-5" v-if="transaction.description" row="4" col="0" text="Description"></label>
+              <label class="p-b-5" v-if="transaction.description" :textWrap="true" row="4" col="1" :text="transaction.description"></label>
+              <label class="p-b-5" row="5" col="0" text="Uploaded by"></label>
+              <label class="p-b-5" row="5" col="1" :text="transaction.adminID.userName"></label>
+              <label class="p-b-5" v-if="transaction.client" row="6" col="0" text="From"></label>
+              <label class="p-b-5" v-if="transaction.client" row="6" col="1" :text="transaction.client.userName"></label>
+              <label class="p-b-5" v-if="transaction.monthOfPayment" row="7" col="0" text="Month"></label>
+              <label class="p-b-5" v-if="transaction.monthOfPayment" row="7" col="1" :text="transaction.monthOfPayment"></label>
+            </GridLayout>
+          </StackLayout>
+          <label v-if="!transaction" row="2" verticalAlignment="center" textAlignment="center" text="Invalid transaction selected."></label>
+          <label v-if="transaction && !transaction.proof" row="2" verticalAlignment="center" textAlignment="center" text="No image"></label>
+          <StackLayout @pan="onPan($event)" @doubleTap="onDoubleTap(event)" @pinch="onPinch($event)" v-if="transaction && transaction.proof" row="2" verticalAlignment="center" textAlignment="center">
+            <Image :style="zoomLevel" :src="transaction.proof" stretch="aspectFill"></Image>
+          </StackLayout>
+        </GridLayout>
+      </PullToRefresh>
     </StackLayout>
   </page>
 </template>
@@ -73,15 +75,24 @@ export default {
   },
   props: ["transactionID"],
   methods: {
-    LoadTransaction() {
+    refreshList(args) {
+      this.LoadTransaction(args);
+    },
+    LoadTransaction(args = null) {
       this.isLoading = true;
       this.$api
         .getTransaction(this.transactionID)
         .then(t => {
+          if (args) {
+            args.object.refreshing = false;
+          }
           this.transaction = t;
           this.isLoading = false;
         })
         .catch(err => {
+          if (args) {
+            args.object.refreshing = false;
+          }
           this.$feedback.error({
             title: "Transaction can not be retrieved",
             duration: 4000,

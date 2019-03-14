@@ -2,14 +2,12 @@
   <page backgroundSpanUnderStatusBar actionBarHidden="true">
     <GridLayout rows="auto,auto,*" columns="*,auto">
       <StackLayout class="m-t-5" textAlignment="center" colSpan="2" verticalAlignment="center" row="0">
-        <Ripple @tap="choosePic()">
-          <ActivityIndicator textAlignment="center" verticalAlignment="center" v-if="!profilePic" :busy="true"></ActivityIndicator>
-          <Image textAlignment="center" v-if="profilePic" stretch="aspectFill" width="100" height="100" borderRadius="100%" :src="profilePic"></Image>
-        </Ripple>
+        <ActivityIndicator textAlignment="center" verticalAlignment="center" v-show="!profilePic" :busy="!profilePic"></ActivityIndicator>
+        <Image @tap="choosePic()" textAlignment="center" v-show="profilePic" stretch="aspectFill" width="100" height="100" borderRadius="100%" :src="profilePic == null ? '' : profilePic"></Image>
         <label row="0" class="labelTitle m-t-5" textAlignment="center">{{ user.fullName }}</label>
         <label row="0" class="labelname" textAlignment="center">{{ user.userName }}</label>
       </StackLayout>
-      <CardView col="1" row="1" textAlignment="right" elevation="15" radius="100" margin="10">
+      <CardView col="1" row="1" textAlignment="right" elevation="15" radius="50" margin="10">
         <Ripple @tap="isEditting = !isEditting">
           <label class="mdi p-15 black-text" verticalAlignment="center" textAlignment="left" fontSize="35" :text="(isEditting ? 'mdi-close' : 'mdi-pencil') | fonticon"></label>
         </Ripple>
@@ -18,13 +16,13 @@
         <CardView v-if="!isEditting" textAlignment="center" margin="10">
           <ScrollView width="100%">
             <StackLayout width="100%">
-              <label class="text-dark-black p-l-20 p-t-20 p-b-10" verticalAlignment="center" fontSize="20" style="opacity:0.6" text="Personal information"></label>
+              <label class="text-dark-black p-l-20 p-t-20 p-b-10" verticalAlignment="center" fontSize="18" style="opacity:0.6" text="Personal information"></label>
               <GridLayout class="text-dark-black p-x-20 p-y-15" rows="auto,auto" columns="auto,*" v-for="(userInfo,index) in userInfos" :key="index">
                 <label row="0" col="0" class="mdi text-dark-black m-r-20" rowSpan="2" verticalAlignment="center" textAlignment="left" fontSize="35" :text="userInfo.icon | fonticon"></label>
                 <label row="0" col="1" class="font-weight-bold" fontSize="15" verticalAlignment="center" textAlignment="left" :text="userInfo.title"></label>
                 <label row="1" col="1" fontSize="15" textAlignment="left" :text="userInfo.body"></label>
               </GridLayout>
-              <label class="text-dark-black p-l-20 p-t-20 p-b-10" verticalAlignment="center" fontSize="20" style="opacity:0.6" text="Previous devices"></label>
+              <label v-show="Devices && Devices.length > 0" class="text-dark-black p-l-20 p-t-20 p-b-10" verticalAlignment="center" fontSize="18" style="opacity:0.6" text="Previous devices"></label>
               <GridLayout class="text-dark-black p-x-20 p-y-15" rows="auto,auto" columns="auto,*,auto" v-for="(device,index) in Devices" :key="index">
                 <label row="0" col="0" class="mdi text-dark-black m-r-20" rowSpan="2" verticalAlignment="center" textAlignment="left" fontSize="35" :text="device.icon | fonticon"></label>
                 <label row="0" col="1" class="font-weight-bold" fontSize="15" textAlignment="left" :text="device.manufacturer"></label>
@@ -65,13 +63,12 @@ import * as imageSource from "tns-core-modules/image-source";
 var appSettings = require("application-settings");
 import * as connectivity from "tns-core-modules/connectivity";
 
-import { isIOS } from "tns-core-modules/platform";
+import { isIOS, device } from "tns-core-modules/platform";
 export default {
   data() {
     return {
       isEditting: false,
       layouts: [],
-      isLoaded: false,
       currentPage: 0,
       currentTab: 0,
       selectedScreen: 1,
@@ -99,14 +96,11 @@ export default {
     }
   },
   mounted() {
-    if (!this.isLoaded) {
-      this.pageLoaded();
-    }
+    this.pageLoaded();
   },
   methods: {
     pageLoaded(args = null) {
       this.layouts = [];
-      this.isLoaded = true;
       this.userInfos = [
         {
           title: "User name",
@@ -139,23 +133,17 @@ export default {
         ? this.user.profilePic
         : this.$store.state.settings.defaultProfilePic;
 
-      this.Devices = [
-        {
-          lastActiveDate: new Date(),
-          model: "SM-959G",
-          manufacturer: "Samsung"
-        },
-        {
-          lastActiveDate: new Date(),
-          model: "SM-959G",
-          manufacturer: "Samsung"
-        },
-        {
-          lastActiveDate: new Date(),
-          model: "SM-959G",
-          manufacturer: "Samsung"
-        }
-      ];
+      this.$api
+        .getPreviousUserDevices(this.user._id)
+        .then(devices => {
+          this.Devices = devices;
+        })
+        .catch(err => {
+          this.$feedback.error({
+            title: "Unable to load your previous devices",
+            message: "Try again later"
+          });
+        });
     },
     refreshList(args) {
       this.pageLoaded(args);

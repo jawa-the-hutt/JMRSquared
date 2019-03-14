@@ -17,20 +17,22 @@
         <label textAlignment="center" class="font-weight-bold text-dark-black p-5" fontSize="25%" :textWrap="true" text="No expenses yet!"></label>
         <label textAlignment="center" class="text-light-black p-5" fontSize="20%" :textWrap="true" text="Hit the + button to add known expenses"></label>
       </StackLayout>
-      <ScrollView rowSpan="2" row="1">
-        <StackLayout>
-          <ActivityIndicator verticalAlignment="center" textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>
-          <Ripple v-show="!isLoading" class="p-15" v-for="(expense,i) in expenses" :key="i">
-            <CardView elevation="10" margin="1">
-              <GridLayout class="p-10" rows="auto,auto" columns="*,auto">
-                <label row="0" col="0" fontSize="15%" class="p-x-15 font-weight-bold" :text="expense.title"></label>
-                <label row="1" col="0" fontSize="15%" class="p-x-15 text-light-red" :text="`R${expense.value}`"></label>
-                <Label row="1" col="1" textAlignment="right" fontSize="15%" textWrap="true" verticalAlignment="center" :text="`${expense.count} transactions`" />
-              </GridLayout>
-            </CardView>
-          </Ripple>
-        </StackLayout>
-      </ScrollView>
+      <PullToRefresh rowSpan="2" row="1" @refresh="refreshList($event)">
+        <ScrollView>
+          <StackLayout>
+            <ActivityIndicator verticalAlignment="center" textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>
+            <Ripple v-show="!isLoading" class="p-15" v-for="(expense,i) in expenses" :key="i">
+              <CardView elevation="10" margin="1">
+                <GridLayout class="p-10" rows="auto,auto" columns="*,auto">
+                  <label row="0" col="0" fontSize="15%" class="p-x-15 font-weight-bold" :text="expense.title"></label>
+                  <label row="1" col="0" fontSize="15%" class="p-x-15 text-light-red" :text="`R${expense.value}`"></label>
+                  <Label row="1" col="1" textAlignment="right" fontSize="15%" textWrap="true" verticalAlignment="center" :text="`${expense.count} transactions`" />
+                </GridLayout>
+              </CardView>
+            </Ripple>
+          </StackLayout>
+        </ScrollView>
+      </PullToRefresh>
       <CardView row="2" margin="15" v-if="expenses.filter(v => v.value) && expenses.filter(v => v.value).length > 0" elevation="20">
         <StackLayout>
           <GridLayout class="m-x-15 m-y-5" rows="auto,auto" columns="*,*">
@@ -62,15 +64,24 @@ export default {
     add(a, b) {
       return a + b;
     },
-    GetBusinessExpenses() {
+    refreshList(args) {
+      this.GetBusinessExpenses(args);
+    },
+    GetBusinessExpenses(args = null) {
       this.isLoading = true;
       this.$api
         .getBusinessExpenses(this.businessId)
         .then(expenses => {
+          if (args) {
+            args.object.refreshing = false;
+          }
           this.isLoading = false;
           this.expenses = expenses;
         })
         .catch(err => {
+          if (args) {
+            args.object.refreshing = false;
+          }
           this.isLoading = false;
           this.$feedback.error({
             title: "Unable to load your expenses",

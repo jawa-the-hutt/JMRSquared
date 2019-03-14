@@ -265,7 +265,7 @@ export default {
       }).then(result => {
         if (result) {
           this.$api
-            .deleteBusiness(
+            .unassignFromBusiness(
               this.$store.state.cache.cachedAdmin._id,
               this.business._id
             )
