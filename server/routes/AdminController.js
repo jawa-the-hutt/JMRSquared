@@ -147,6 +147,7 @@ router.post("/update/profile/for/:adminID", async (req, res) => {
   var numbers = req.body.numbers;
 
   var admin = await Admin.findById(req.params.adminID);
+  var answer = '';
   if (!admin) {
     return res.status(512).send("User does not exist");
   }
@@ -158,6 +159,11 @@ router.post("/update/profile/for/:adminID", async (req, res) => {
     if (exists) {
       return res.status(512).send(`Username ${userName} already exists, Try another username.`);
     }
+    if (userName.length < 4) {
+      return res.status(512).send(`Username too short.`);
+    }
+    admin.userName = userName;
+    answer += "username ,";
   }
 
   if (email && email != admin.email) {
@@ -167,6 +173,11 @@ router.post("/update/profile/for/:adminID", async (req, res) => {
     if (exists) {
       return res.status(512).send(`Email ${email} already exists, Try another email.`);
     }
+    if (email.indexOf('@') < 0 || email.indexOf('.') < 0) {
+      return res.status(512).send(`Invalid email provided.`);
+    }
+    admin.email = email;
+    answer += "email ,";
   }
 
   if (numbers && numbers != admin.numbers) {
@@ -176,6 +187,11 @@ router.post("/update/profile/for/:adminID", async (req, res) => {
     if (exists) {
       return res.status(512).send(`Contact number ${numbers} already exists, Try another contact number.`);
     }
+    if (numbers.length < 9 || numbers.length > 14 || isNaN(numbers)) {
+      return res.status(512).send(`Invalid contact numbers provided.`);
+    }
+    admin.numbers = numbers;
+    answer += "contact numbers ,";
   }
 
   if (fullName && fullName != admin.fullName) {
@@ -185,6 +201,11 @@ router.post("/update/profile/for/:adminID", async (req, res) => {
     if (exists) {
       return res.status(512).send(`Name ${fullName} already exists, Try another name.`);
     }
+    if (fullName.length < 4) {
+      return res.status(512).send(`Full name too short.`);
+    }
+    admin.fullName = fullName;
+    answer += "full names ,";
   }
 
   admin.save(function (err) {
@@ -201,7 +222,12 @@ router.post("/update/profile/for/:adminID", async (req, res) => {
       return res.status(512).send("Unable to save changes, try again later");
     }
 
-    return res.send("Changes saved successfully!");
+    if (answer) {
+      answer = 'Your new ' + answer + ' were saved successfully';
+    } else {
+      answer = "No changes made";
+    }
+    return res.send(answer);
   });
 });
 
