@@ -26,9 +26,8 @@ class FCM {
     sendToUser(adminID, payload) {
         return new Promise((resolve, reject) => {
             Admin.findById(adminID)
-                .then(user => {
-                    if (user == null)
-                        return reject("User of id " + adminID + " not found");
+                .then(async user => {
+                    if (user == null) return reject("User of id " + adminID + " not found");
                     var tokens = user.deviceTokens.filter(v => !v.removed).map(v => v.token);
                     if (tokens) {
                         for (let i = 0; i < tokens.length; i++) {
@@ -50,14 +49,14 @@ class FCM {
             admin
                 .messaging()
                 .sendToDevice(registrationToken, payload, options)
-                .then(function(response) {
+                .then(function (response) {
                     if (response.successCount > 0 && response.failureCount == 0) {
                         return resolve(response.results);
                     } else {
                         throw response.results;
                     }
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     if (error.filter && error.filter(e => JSON.stringify(e.error).indexOf("The provided registration token is not registered") >= 0)) {
                         Admin.findOne({
                             deviceTokens: {
@@ -70,7 +69,7 @@ class FCM {
                                 if (deviceToken.token == registrationToken) {
                                     deviceToken.removed = true;
                                     deviceToken.dateRemoved = new Date();
-                                    _admin.save(function(err) {
+                                    _admin.save(function (err) {
                                         if (err) return reject(err);
                                         return resolve({
                                             message: "Token has expired , we unliked it , " + registrationToken
@@ -93,14 +92,14 @@ class FCM {
             admin
                 .messaging()
                 .sendToTopic(topic, payload)
-                .then(function(response) {
+                .then(function (response) {
                     if (response.successCount > 0 && response.failureCount == 0) {
                         return resolve(response.results);
                     } else {
                         throw response.results;
                     }
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     return reject(error);
                 });
         });
@@ -111,14 +110,14 @@ class FCM {
             admin
                 .messaging()
                 .subscribeToTopic(registrationToken, topic)
-                .then(function(response) {
+                .then(function (response) {
                     if (response.successCount > 0 && response.failureCount == 0) {
                         return resolve(response.results);
                     } else {
                         throw response.results;
                     }
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     return reject(error);
                 });
         });
@@ -129,14 +128,14 @@ class FCM {
             admin
                 .messaging()
                 .subscribeToTopic(registrationToken, topic)
-                .then(function(response) {
+                .then(function (response) {
                     if (response.successCount > 0 && response.failureCount == 0) {
                         return resolve(response.results);
                     } else {
                         throw response.results;
                     }
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     return reject(error);
                 });
         });
