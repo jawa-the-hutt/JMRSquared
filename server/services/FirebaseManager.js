@@ -31,9 +31,9 @@ class FCM {
                         return reject("User of id " + adminID + " not found");
                     var tokens = user.deviceTokens.filter(v => !v.removed).map(v => v.token);
                     if (tokens) {
-                        tokens.forEach(async deviceToken => {
-                            await this.sendToDevice(deviceToken, payload);
-                        });
+                        for (let i = 0; i < tokens.length; i++) {
+                            await this.sendToDevice(tokens[i], payload);
+                        }
                         return resolve("Notification will be sent to " + tokens.length + " devices");
                     } else {
                         return reject("User has no device");
