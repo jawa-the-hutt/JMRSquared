@@ -221,8 +221,15 @@ router.get("/get/all/:type/for/:business", auth.required, (req, res, next) => {
           });
 
         for (const partner of partners) {
-          var transaction = await Transaction.findOne({
-              client: mongoose.Types.ObjectId(partner._id)
+          var transactions = await Transaction.find({
+              businessID: business._id,
+              $or: [{
+                  adminID: mongoose.Types.ObjectId(partner._id)
+                },
+                {
+                  client: mongoose.Types.ObjectId(partner._id)
+                }
+              ]
             },
             "client date amount", {
               sort: {
@@ -230,10 +237,15 @@ router.get("/get/all/:type/for/:business", auth.required, (req, res, next) => {
               }
             }
           );
-
-          partner.lastEventDate = transaction ? transaction.date : null;
-          partner.lastEventAmount = transaction ? transaction.amount : 0;
-          partner.lastEventTitle = "Last payment";
+          if (transactions && transactions.length > 0) {
+            partner.lastEventDate = transactions[0].date;
+            partner.lastEventAmount = transactions.reduce((a, b) => a.amount + b.amount);
+            partner.lastEventTitle = transactions.length + (transactions.length == 1 ? " transaction" : " transactions");
+          } else {
+            partner.lastEventDate = null;
+            partner.lastEventAmount = 0;
+            partner.lastEventTitle = "No transactions yet";
+          }
         }
         res.json(partners);
       })
