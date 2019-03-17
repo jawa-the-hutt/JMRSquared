@@ -91,7 +91,7 @@ router.get("/get/:business/for/:userid", auth.required, (req, res, next) => {
         });
     })
     .catch(err => {
-      return res.status(512).send(err);
+      return res.status(512).send(err.message);
     });
 });
 
