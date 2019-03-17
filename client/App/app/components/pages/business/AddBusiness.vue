@@ -31,29 +31,25 @@
                   </GridLayout>
   
                   <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
-                    <label row="0" col="0" verticalAlignment="top" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-briefcase' | fonticon"></label>
+                    <label row="0" col="0" rowSpan="2" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-briefcase' | fonticon"></label>
                     <label row="0" col="1" verticalAlignment="center" class="h3 font-weight-bold text-mute" text="Business Type"></label>
-                    <ListPicker row="1" col="0" colSpan="2" @selectedIndexChange="changeSelectedBusinessCategory" :items="business.options.types.map(t => t.type)" v-model="business.type.index" />
-                  </GridLayout>
-                  <StackLayout width="100%" class="hr-light"></StackLayout>
-  
-                  <GridLayout v-show="business.type.index && !business.options.types[business.type.index].category" class="m-10" rows="auto,auto" columns="auto,*">
-                    <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-domain' | fonticon"></label>
-                    <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Business type"></label>
-                    <TextField returnKeyType="next" v-model="businessType" row="1" col="1" class="h4" hint="e.g Property"></TextField>
-                  </GridLayout>
-  
-                  <GridLayout v-show="business.type.index && business.options.types[business.type.index].category" class="m-10" rows="auto,auto" columns="auto,*">
-                    <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-' + business.type.icon | fonticon"></label>
-                    <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Business Category"></label>
-                    <label :text="business.type.category" row="1" col="1" class="h4"></label>
+                    <ScrollView row="1" col="1">
+                      <StackLayout>
+                        <StackLayout class="h4" :textWrap="true" :key="c" v-for="(current,c) in business.options.types.map(t => t.type)">
+                          <CheckBox class="p-x-15 h4" name="circleToggle" boxType="circle" :textWrap="true" @tap="changeSelectedBusinessCategory(c)" :text="current" :checked="business.type.index == c"></CheckBox>
+                          <TextField v-if="current == 'Other' && business.type.index == c" returnKeyType="next" v-model="businessType" class="h4" hint="Business type"></TextField>
+                        </StackLayout>
+                      </StackLayout>
+                    </ScrollView>
                   </GridLayout>
   
-                  <GridLayout class="m-10" v-if="business.type.optionals" v-for="(optional,o) in business.type.optionals" :key="o" rows="auto,auto" columns="auto,*">
-                    <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-' + optional.icon | fonticon"></label>
-                    <label row="0" col="1" class="h3 font-weight-bold text-mute" :text="optional.title"></label>
-                    <TextField returnKeyType="next" v-model="optional.answer" :keyboardType="optional.type" row="1" col="1" class="h4" :hint="optional.hint"></TextField>
-                  </GridLayout>
+                  <StackLayout v-if="business.type.optionals">
+                    <GridLayout class="m-10" v-for="(optional,o) in business.type.optionals" :key="o" rows="auto,auto" columns="auto,*">
+                      <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-' + optional.icon | fonticon"></label>
+                      <label row="0" col="1" class="h3 font-weight-bold text-mute" :text="optional.title"></label>
+                      <TextField returnKeyType="next" v-model="optional.answer" :keyboardType="optional.type" row="1" col="1" class="h4" :hint="optional.hint"></TextField>
+                    </GridLayout>
+                  </StackLayout>
                   <StackLayout width="100%" class="hr-light"></StackLayout>
   
                   <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
@@ -114,23 +110,19 @@
                     <label :text="business.type.type" row="1" col="1" class="h4"></label>
                   </GridLayout>
   
-                  <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
-                    <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-' + business.type.icon | fonticon"></label>
-                    <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Business Category"></label>
-                    <label :text="business.type.category" row="1" col="1" class="h4"></label>
-                  </GridLayout>
-  
                   <GridLayout v-show="business.description.length != 0" class="m-10" rows="auto,auto" columns="auto,*">
                     <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-message-bulleted' | fonticon"></label>
                     <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Business slogan"></label>
                     <label :text="business.description" row="1" col="1" class="h4"></label>
                   </GridLayout>
   
-                  <GridLayout class="m-10" v-if="business.type.optionals && optional.answer && optional.answer.length != 0" v-for="(optional,o) in business.type.optionals" :key="o" rows="auto,auto" columns="auto,*">
-                    <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-' + optional.icon | fonticon"></label>
-                    <label row="0" col="1" class="h3 font-weight-bold text-mute" :text="optional.title"></label>
-                    <label :text="optional.answer" row="1" col="1" class="h4"></label>
-                  </GridLayout>
+                  <StackLayout v-for="(optional,o) in business.type.optionals" :key="o">
+                    <GridLayout v-if="business.type.optionals && optional.answer && optional.answer.length != 0" class="m-10" rows="auto,auto" columns="auto,*">
+                      <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-' + optional.icon | fonticon"></label>
+                      <label row="0" col="1" class="h3 font-weight-bold text-mute" :text="optional.title"></label>
+                      <label :text="optional.answer" row="1" col="1" class="h4"></label>
+                    </GridLayout>
+                   </StackLayout>
   
                   <StackLayout width="100%" class="hr-light"></StackLayout>
                   <GridLayout v-show="business.logo" class="m-10" rows="auto" columns="*,auto">
@@ -280,7 +272,7 @@ export default {
           this.$feedback.error({
             title: "Server error",
             duration: 4000,
-            message: err,
+            message: err.message,
             onTap: () => {
               dialogs.alert("TODO : Handle the error");
             }
@@ -455,7 +447,7 @@ export default {
             icon: "domain",
             type: this.businessType,
             index: this.business.type.index,
-            category: "Custom"
+            category: ""
           };
         }
         return true;
@@ -473,8 +465,10 @@ export default {
     changeSelectedBusinessCategory(index) {
       if (
         this.business.options.types.length > 0 &&
-        this.business.options.types.length > this.business.type.index
+        this.business.options.types.length > this.business.type.index &&
+        this.business.options.types.length > index
       ) {
+        this.business.type.index = index;
         this.business.type.category = this.business.options.types[
           this.business.type.index
         ].category;

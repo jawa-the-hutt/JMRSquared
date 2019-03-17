@@ -45,8 +45,14 @@ export default class API {
                 });
                 return false;
             }
-        } else {
+        } else if (result.statusCode == 512) {
+            throw new Error(result.content.toString());
+        } else if (result.statusCode == 503) {
+            throw new Error("Server error, please try again later");
+        } else if (result.statusCode == 200) {
             return true;
+        } else {
+            throw new Error("Unknown error,please try again later or contact admin");
         }
     }
 
@@ -681,6 +687,32 @@ export default class API {
                         adminID,
                         adminAuthority,
                         businessID
+                    })
+                )
+                .then(result => {
+                    var answer = this.handleResponse(result);
+                    if (answer) {
+                        return resolve(result);
+                    }
+                })
+                .catch(err => {
+                    return reject(err);
+                });
+        });
+    }
+
+    updateUserProfile(adminID, userInfos) {
+        return new Promise((resolve, reject) => {
+            if (!userInfos) {
+                return reject("Invalid request");
+            }
+            http
+                .request(
+                    this.makePost("/a/update/profile/for/" + adminID, {
+                        userName: userInfos.find(v => v.key == "username").body,
+                        fullName: userInfos.find(v => v.key == "fullname").body,
+                        email: userInfos.find(v => v.key == "email").body,
+                        numbers: userInfos.find(v => v.key == "numbers").body
                     })
                 )
                 .then(result => {

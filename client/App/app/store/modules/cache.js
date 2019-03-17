@@ -138,13 +138,8 @@ const mutations = {
       console.log("Document exists , " + documentID + " , we Updated");
     }
 
-    if (obj.isAdmin) {
-      state.cachedAdmin = obj.user;
-      state.lastUpdated = new Date();
-    } else {
-      state.cachedTenant = obj.user;
-      state.lastUpdated = new Date();
-    }
+    state.cachedAdmin = obj.user;
+    state.lastUpdated = new Date();
 
   },
   clearCachedBusiness(state, obj) {

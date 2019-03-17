@@ -40,12 +40,14 @@
                 <GridLayout class="text-dark-black p-x-20 p-y-15" rows="auto,auto" columns="auto,*" v-for="(userInfo,index) in userInfos" :key="index">
                   <label row="0" col="0" class="mdi text-dark-black m-r-20" rowSpan="2" verticalAlignment="center" textAlignment="left" fontSize="35" :text="userInfo.icon | fonticon"></label>
                   <label row="0" col="1" class="font-weight-bold" fontSize="15" verticalAlignment="center" textAlignment="left" :text="userInfo.title"></label>
-                  <TextField row="1" col="1" fontSize="15" textAlignment="left" v-model="userInfo.body" />
+                  <TextField v-show="userInfo.edittable" row="1" col="1" fontSize="15" textAlignment="left" v-model="userInfo.body" />
+                  <Label v-show="!userInfo.edittable" row="1" col="1" fontSize="15" textAlignment="left" :text="userInfo.body" />
                 </GridLayout>
               </StackLayout>
             </ScrollView>
             <StackLayout row="1">
-              <Button text="Save changes" :isEnabled="!isLoading" class="submit-button bg-dark-blue text-white"></Button>
+              <ActivityIndicator textAlignment="center" v-show="isLoading" :busy="isLoading"></ActivityIndicator>
+              <Button @tap="SaveChanges()" text="Save changes" v-show="!isLoading" :isEnabled="!isLoading" class="submit-button bg-dark-blue text-white"></Button>
             </StackLayout>
           </GridLayout>
         </CardView>
@@ -68,6 +70,7 @@ import { isIOS, device } from "tns-core-modules/platform";
 export default {
   data() {
     return {
+      isLoading: false,
       isEditting: false,
       layouts: [],
       currentPage: 0,
@@ -104,27 +107,37 @@ export default {
       this.layouts = [];
       this.userInfos = [
         {
+          key: "username",
           title: "User name",
+          edittable: true,
           body: this.user.userName,
           icon: "mdi-account"
         },
         {
+          key: "fullname",
           title: "Full name",
+          edittable: true,
           body: this.user.fullName,
           icon: "mdi-account-circle-outline"
         },
         {
+          key: "email",
           title: "Email",
+          edittable: true,
           body: this.user.email,
           icon: "mdi-email"
         },
         {
+          key: "numbers",
           title: "Contact number",
-          body: "0" + this.user.numbers,
+          edittable: true,
+          body: this.user.numbers,
           icon: "mdi-phone"
         },
         {
+          key: "activeusers",
           title: "Active since",
+          edittable: false,
           body: this.getMoment(this.user.date).fromNow(),
           icon: "mdi-clock-outline"
         }
@@ -149,15 +162,43 @@ export default {
     refreshList(args) {
       this.pageLoaded(args);
     },
-    eventChanged(event) {
-      dialogs.alert("Changed view").then(() => {
-        console.log("This is it");
-      });
-    },
-    onItemTap(item) {
-      if (item.link) {
-        this.navigate(item.link, item.props);
-      }
+    SaveChanges() {
+      this.isLoading = true;
+      this.$api
+        .updateUserProfile(
+          this.user._id,
+          this.userInfos.filter(v => v.edittable)
+        )
+        .then(results => {
+          console.log("results");
+          this.$feedback.success({
+            title: results.content.toString()
+          });
+
+          var newUser = JSON.parse(JSON.stringify(this.user));
+          newUser.userName = this.userInfos.find(v => v.key == "username").body;
+          newUser.fullName = this.userInfos.find(v => v.key == "fullname").body;
+          newUser.email = this.userInfos.find(v => v.key == "email").body;
+          newUser.numbers = this.userInfos.find(v => v.key == "numbers").body;
+
+          this.$store.commit("cacheUser", {
+            db: this.$db,
+            api: this.$api,
+            appSettings: this.appSettings,
+            user: newUser,
+            isAdmin: true
+          });
+
+          this.isEditting = false;
+          this.isLoading = false;
+        })
+        .catch(err => {
+          this.$feedback.error({
+            title: "An error has occured",
+            message: err.message
+          });
+          this.isLoading = false;
+        });
     },
     onBusinessTap(item) {},
     choosePic() {
@@ -173,7 +214,6 @@ export default {
         })
         .then(selection => {
           selection.forEach(async selected => {
-            // process the selected image
             let source = new imageSource.ImageSource();
             let img = await source.fromAsset(selected);
             if (img) {

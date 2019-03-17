@@ -265,10 +265,16 @@ export default {
       return Math.floor(100000 + Math.random() * 900000);
     },
     goToPartners() {
-      this.navigate("/business/partners/list", {
-        businessId: this.businessId,
-        businessName: this.businessName
-      });
+      this.navigate(
+        "/business/partners/list",
+        {
+          businessId: this.businessId,
+          businessName: this.businessName
+        },
+        {
+          clearHistory: true
+        }
+      );
     },
     submitPartner() {
       this.isLoading = true;
