@@ -47,7 +47,6 @@ router.get("/get/:business/for/:userid", auth.required, (req, res, next) => {
     .then(business => {
       if (business == null)
         return res.status(512).send("The requested business is not avaliable");
-      console.log(business.admin);
       if (!business.admin || !business.admin.some(a => a.id && a.id._id == adminID)) {
         return res
           .status(512)
