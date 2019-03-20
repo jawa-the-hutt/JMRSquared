@@ -46,8 +46,8 @@
                   </GridLayout>
   
                   <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
-                    <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-cash-multiple' | fonticon"></label>
-                    <label row="0" col="1" class="h3 font-weight-bold text-mute" :text="'Amount ' + (!transaction.isMoneyIn ? 'used' : 'deposited')  "></label>
+                    <label row="0" rowSpan="2" :class="{'text-light-red':!transaction.isMoneyIn,'text-light-green':transaction.isMoneyIn}" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-cash-multiple' | fonticon"></label>
+                    <label row="0" col="1" :class="{'text-light-red':!transaction.isMoneyIn,'text-light-green':transaction.isMoneyIn}" class="h3 font-weight-bold text-mute" :text="'Amount ' + (!transaction.isMoneyIn ? 'used' : 'deposited')  "></label>
                     <TextField row="1" col="1" v-model="transaction.amount" :hint="'How much did you ' + (!transaction.isMoneyIn ? 'use' : 'deposit')  + '?'" keyboardType="number" returnKeyType="next" class="h4"></TextField>
                   </GridLayout>
                   <StackLayout width="100%" class="hr-light"></StackLayout>
@@ -206,7 +206,7 @@
               </GridLayout>
               <GridLayout v-show="savedTransaction" rows="auto,auto" columns="*">
                 <Label row="0" text="Your transaction was saved successfully!" textWrap="true" class="text-mute text-light-blue" textAlignment="center"></Label>
-                <Button row="1" @tap="GoTo('/business/home',{businessID:businessId},{clearHistory: true})" class="btn-primary bg-light-blue" text="All Transactions"></Button>
+                <Button row="1" @tap="navigate(null,true)" class="btn-primary bg-light-blue" text="All Transactions"></Button>
               </GridLayout>
             </FlexboxLayout>
             <ActivityIndicator v-show="isLoading" :busy="isLoading"></ActivityIndicator>
@@ -350,9 +350,6 @@ export default {
     this.pageLoaded(null);
   },
   methods: {
-    GoTo(link, props) {
-      this.navigate(link, props);
-    },
     changeTransactionType(isTrue) {
       if (!isTrue) {
         this.transaction.isMoneyIn = !this.transaction.isMoneyIn;
@@ -457,25 +454,10 @@ export default {
               title: response.content.toString(),
               duration: 4000,
               onTap: () => {
-                this.GoTo(
-                  "/business/home",
-                  {
-                    businessID: this.businessId
-                  },
-                  {
-                    clearHistory: true
-                  }
-                );
+                this.navigate(null,true);
               }
             });
             this.savedTransaction = true;
-            this.isLoading = false;
-          } else if (statusCode == 413) {
-            this.$feedback.error({
-              title: "Unable to add transaction",
-              message: "The image file is too large",
-              duration: 4000
-            });
             this.isLoading = false;
           }
         })
@@ -498,14 +480,14 @@ export default {
       var self = this;
       this.$showModal({
         template: ` 
-                                                                                                                          <Page>
-                                                                                                                              <GridLayout rows="auto,*,auto" columns="*" width="100%" height="60%">
-                                                                                                                                  <Label row="0" class="h3 m-5" :textWrap="true" textAlignment="center" text="When must the notification be sent?"></Label>
-                                                                                                                                  <DatePicker verticalAlignment="center" row="1" v-model="selectedDueDate" />
-                                                                                                                                  <Label row="2" class="mdi h1 m-5" @tap="changeDueRent($modal)" textAlignment="center" :text="'mdi-check' | fonticon"></Label>
-                                                                                                                              </GridLayout>
-                                                                                                                          </Page>
-                                                                                                                          `,
+                  <Page>
+                      <GridLayout rows="auto,*,auto" columns="*" width="100%" height="60%">
+                          <Label row="0" class="h3 m-5" :textWrap="true" textAlignment="center" text="When must the notification be sent?"></Label>
+                          <DatePicker verticalAlignment="center" row="1" v-model="selectedDueDate" />
+                          <Label row="2" class="mdi h1 m-5" @tap="changeDueRent($modal)" textAlignment="center" :text="'mdi-check' | fonticon"></Label>
+                      </GridLayout>
+                  </Page>
+                  `,
         data: function() {
           return {
             selectedDueDate: new Date()
@@ -555,7 +537,7 @@ export default {
           });
       } else {
         let context = imagepicker.create({
-          mode: "single" // use "multiple" for multiple selection
+          mode: "single"
         });
 
         context

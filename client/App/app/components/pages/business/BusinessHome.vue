@@ -59,10 +59,9 @@ export default {
         .then(results => {
           this.business = results;
           this.tabs = [];
-          // We do the fall strategy here
 
           this.business.currentAuth = this.business.admin.find(
-            a => a.id._id == this.$store.state.cache.cachedAdmin._id
+            a => a.id && a.id._id == this.$store.state.cache.cachedAdmin._id
           );
 
           if (this.business.currentAuth.authority == "WORKER") {
@@ -72,6 +71,7 @@ export default {
               view: "BusinessNotifications"
             });
           }
+          // We do the fall strategy here
           switch (this.business.currentAuth.authority) {
             case "ADMIN":
               this.tabs.push({

@@ -9,37 +9,39 @@
         <Ripple v-if="!business.logo" row="0" rowSpan="2" col="2" width="70" height="70" verticalAlignment="center" borderRadius="50%">
           <Label verticalAlignment="center" textAlignment="center" class="mdi" fontSize="35%" :text="'mdi-camera' | fonticon"></Label>
         </Ripple>
-        <label row="0" col="0" colSpan="3" fontSize="18%" verticalAlignment="bottom" textAlignment="center" class="font-weight-bold text-white text-mute" text="Notifications"></label>
-        <Label row="1" col="0" colSpan="3" fontSize="15%" verticalAlignment="center" textAlignment="center" class="text-white" :textWrap="true" :text="`Reminders and alerts about ${business.name}`"></Label>
+        <label row="0" col="0" rowSpan="2" colSpan="3" fontSize="18%" verticalAlignment="center" textAlignment="center" class="font-weight-bold text-white text-mute" text="Notifications"></label>
       </GridLayout>
     </CardView>
+    <StackLayout row="1" class="p-x-15 p-5 text-dark-black" verticalAlignment="center">
+      <label textAlignment="center" class="mdi p-5" fontSize="50%" :text="'mdi-bell' | fonticon"></label>
+      <label textAlignment="center" class="font-weight-bold text-dark-black p-5" fontSize="22%" :textWrap="true" text="No notifications!"></label>
+      <label textAlignment="center" class="text-light-black p-5" fontSize="17%" :textWrap="true" text="Notifications from your business partners will appear here"></label>
+    </StackLayout>
     <StackLayout class="p-x-15" row="1">
-      <CardView margin="2" elevation="10">
-        <GridLayout rows="auto,auto,auto,*,auto" columns="*,*,*">
-          <ActivityIndicator v-if="!Notifications" col="0" colSpan="3" textAlignment="center" verticalAlignment="center" :busy="!Notifications"></ActivityIndicator>
-          <PullToRefresh col="0" colSpan="3" @refresh="refreshList($event)">
-            <ScrollView v-if="Notifications">
-              <StackLayout>
-                <GridLayout rows="auto" columns="*,auto" v-for="(notification,i) in Notifications" :key="i">
-                  <Ripple @tap="selectedNotification == i ? selectedNotification = null: selectedNotification = i" col="0" :colSpan="selectedNotification == i ? '1' : '2'" class="m-r-15 p-15">
-                    <GridLayout rows="auto,auto,auto" columns="auto,*,auto">
-                      <label row="0" rowSpan="3" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-' + notification.icon | fonticon"></label>
-                      <label row="0" col="1" class="h3 font-weight-bold text-mute" :text="notification.title"></label>
-                      <label row="1" col="1" :textWrap="true" class="h4" :text="notification.body"></label>
-                      <Label row="2" col="2" v-if="selectedNotification != i" verticalAlignment="center" class="h4 text-mute p-x-5" textAlignment="right" :text="getMoment(notification.date).fromNow()"></Label>
-                    </GridLayout>
+      <GridLayout rows="auto,auto,auto,*,auto" columns="*,*,*">
+        <ActivityIndicator v-if="!Notifications" col="0" colSpan="3" textAlignment="center" verticalAlignment="center" :busy="!Notifications"></ActivityIndicator>
+        <PullToRefresh col="0" colSpan="3" @refresh="refreshList($event)">
+          <ScrollView v-if="Notifications">
+            <StackLayout>
+              <GridLayout rows="auto" columns="*,auto" v-for="(notification,i) in Notifications" :key="i">
+                <Ripple @tap="selectedNotification == i ? selectedNtification = null: selectedNotification = i" col="0" :colSpan="selectedNotification == i ? '1' : '2'" class="m-r-15 p-15">
+                  <GridLayout rows="auto,auto,auto" columns="auto,*,auto">
+                    <label row="0" rowSpan="3" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-' + notification.icon | fonticon"></label>
+                    <label row="0" col="1" class="h3 font-weight-bold text-mute" :text="notification.title"></label>
+                    <label row="1" col="1" :textWrap="true" class="h4" :text="notification.body"></label>
+                    <Label row="2" col="2" v-if="selectedNotification != i" verticalAlignment="center" class="h4 text-mute p-x-5" textAlignment="right" :text="getMoment(notification.date).fromNow()"></Label>
+                  </GridLayout>
+                </Ripple>
+                <StackLayout verticalAlignment="center" textAlignment="center" row="0" col="1" v-if="selectedNotification == i">
+                  <Ripple @tap="markNotificationAsSeen(notification)">
+                    <label verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-thumb-up-outline' | fonticon"></label>
                   </Ripple>
-                  <StackLayout verticalAlignment="center" textAlignment="center" row="0" col="1" v-if="selectedNotification == i">
-                    <Ripple @tap="markNotificationAsSeen(notification)">
-                      <label verticalAlignment="center" textAlignment="center" class="mdi m-15" fontSize="25%" :text="'mdi-thumb-up-outline' | fonticon"></label>
-                    </Ripple>
-                  </StackLayout>
-                </GridLayout>
-              </StackLayout>
-            </ScrollView>
-          </PullToRefresh>
-        </GridLayout>
-      </CardView>
+                </StackLayout>
+              </GridLayout>
+            </StackLayout>
+          </ScrollView>
+        </PullToRefresh>
+      </GridLayout>
     </StackLayout>
   </GridLayout>
 </template>
@@ -160,7 +162,7 @@ export default {
     markNotificationAsSeen(notification) {
       dialogs
         .confirm({
-          title: "Mark as seen",
+          title: "Remove notification",
           message: "Are you sure you want to remove this notification?",
           okButtonText: "Yes",
           cancelButtonText: "No"

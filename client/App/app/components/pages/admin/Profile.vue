@@ -8,12 +8,12 @@
         <label row="0" class="labelname" textAlignment="center">{{ user.userName }}</label>
       </StackLayout>
       <CardView col="1" row="1" textAlignment="right" elevation="15" radius="50" margin="10">
-        <Ripple @tap="isEditting = !isEditting">
-          <label class="mdi p-15 black-text" verticalAlignment="center" textAlignment="left" fontSize="35" :text="(isEditting ? 'mdi-close' : 'mdi-pencil') | fonticon"></label>
+        <Ripple @tap="currentPage == 0 ? currentPage = 1 : currentPage = 0">
+          <label class="mdi p-15 black-text" verticalAlignment="center" textAlignment="left" fontSize="35" :text="(currentPage == 1 ? 'mdi-close' : 'mdi-pencil') | fonticon"></label>
         </Ripple>
       </CardView>
       <StackLayout colSpan="2" row="2">
-        <CardView v-if="!isEditting" textAlignment="center" margin="10">
+        <CardView v-if="currentPage == 0" textAlignment="center" margin="10">
           <ScrollView width="100%">
             <StackLayout width="100%">
               <label class="text-dark-black p-l-20 p-t-20 p-b-10" verticalAlignment="center" fontSize="18" style="opacity:0.6" text="Personal information"></label>
@@ -33,7 +33,7 @@
             </StackLayout>
           </ScrollView>
         </CardView>
-        <CardView v-if="isEditting" textAlignment="center" margin="10">
+        <CardView v-if="currentPage == 1" textAlignment="center" margin="10">
           <GridLayout rows="*,auto">
             <ScrollView row="0" width="100%">
               <StackLayout width="100%">
@@ -71,7 +71,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      isEditting: false,
       layouts: [],
       currentPage: 0,
       currentTab: 0,
@@ -189,7 +188,7 @@ export default {
             isAdmin: true
           });
 
-          this.isEditting = false;
+          this.currentPage = 0;
           this.isLoading = false;
         })
         .catch(err => {

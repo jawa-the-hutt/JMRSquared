@@ -49,6 +49,8 @@ export default class API {
             throw new Error(result.content.toString());
         } else if (result.statusCode == 503) {
             throw new Error("Server error, please try again later");
+        } else if (statusCode == 413) {
+            throw new Error("The image file is too large");
         } else if (result.statusCode == 200) {
             return true;
         } else {

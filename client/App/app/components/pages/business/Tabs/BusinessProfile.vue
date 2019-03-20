@@ -10,7 +10,7 @@
           <Label verticalAlignment="center" textAlignment="center" class="mdi" fontSize="35%" :text="'mdi-camera' | fonticon"></Label>
         </Ripple>
         <label row="0" col="0" colSpan="3" fontSize="18%" verticalAlignment="bottom" textAlignment="center" class="font-weight-bold text-white text-mute" :text="business.name"></label>
-        <Label row="1" col="0" colSpan="3" fontSize="15%" verticalAlignment="center" textAlignment="center" class="text-white" :textWrap="true" :text="business.description ? business.description : business.type.type"></Label>
+        <Label row="1" col="0" colSpan="3" fontSize="15%" verticalAlignment="center" textAlignment="center" class="text-white" :textWrap="true" :text="business.type.type"></Label>
       </GridLayout>
     </CardView>
     <StackLayout class="p-x-15" row="1">
