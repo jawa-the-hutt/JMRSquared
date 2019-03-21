@@ -581,15 +581,34 @@ router.post("/forgot/password", function (req, res) {
     try {
       var smsResponse = await smsProvider.sendSMS(
         req.body.numbers,
-        `Hey ${admin.userName}, Your OTP for JMRSquared is ${req.body.otp} \n\n If you did not request for an OTP please ignore this message`
+        `Hey ${admin.userName}\n\nYour OTP for JMRSquared is ${req.body.otp} \n\nIf you did not request for an OTP please ignore this message`
       );
       if (smsResponse) {
-        return res.send("An otp was sent to 0" + admin.numbers);
+        return res.json({
+          _id: admin._id,
+          message: "An otp was sent to 0" + admin.numbers
+        });
       }
       throw new Error("Could not send OTP");
     } catch (err) {
       return res.status(512).send("Could not send your OTP, try again later");
     }
+  }).catch(err => {
+    return res.status(512).send("Server error, try again later");
+  });
+});
+
+router.post("/change/password", function (req, res) {
+  if (!req.body.adminID || !req.body.password || req.body.password.length < 4) return res.status(512).send("Invalid request");
+  Admin.findById(req.body.adminID).then(async admin => {
+    if (admin == null) return res.status(512).send("Failed to find user, try again later");
+    admin.pass = req.body.password;
+    admin.save(function (err) {
+      if (err) return res.status(512).send("Unable to save your new password, try again later");
+      return res.send("Password changed successfully");
+    });
+  }).catch(err => {
+    return res.status(512).send("Server error, try again later");
   });
 });
 
