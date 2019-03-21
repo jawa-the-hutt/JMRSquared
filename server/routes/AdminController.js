@@ -573,4 +573,24 @@ router.get("/notifications/all", function (req, res) {
   });
 });
 
+router.post("/forgot/password", function (req, res) {
+  Admin.findOne({
+    numbers: req.body.numbers
+  }).then(async admin => {
+    if (admin == null) return res.status(512).send("Failed to find user, try again later");
+    try {
+      var smsResponse = await smsProvider.sendSMS(
+        req.body.numbers,
+        `Hey ${admin.userName}, Your OTP for JMRSquared is ${req.body.otp} \n\n If you did not request for an OTP please ignore this message`
+      );
+      if (smsResponse) {
+        return res.send("An otp was sent to 0" + admin.numbers);
+      }
+      throw new Error("Could not send OTP");
+    } catch (err) {
+      return res.status(512).send("Could not send your OTP, try again later");
+    }
+  });
+});
+
 module.exports = router;
