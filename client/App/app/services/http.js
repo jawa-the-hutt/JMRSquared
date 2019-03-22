@@ -49,7 +49,7 @@ export default class API {
             throw new Error(result.content.toString());
         } else if (result.statusCode == 503) {
             throw new Error("Server error, please try again later");
-        } else if (statusCode == 413) {
+        } else if (result.statusCode == 413) {
             throw new Error("The image file is too large");
         } else if (result.statusCode == 200) {
             return true;
@@ -715,6 +715,49 @@ export default class API {
                         fullName: userInfos.find(v => v.key == "fullname").body,
                         email: userInfos.find(v => v.key == "email").body,
                         numbers: userInfos.find(v => v.key == "numbers").body
+                    })
+                )
+                .then(result => {
+                    var answer = this.handleResponse(result);
+                    if (answer) {
+                        return resolve(result);
+                    }
+                })
+                .catch(err => {
+                    return reject(err);
+                });
+        });
+    }
+
+    sendOTP(numbers, otp) {
+        return new Promise((resolve, reject) => {
+            http
+                .request(
+                    this.makePost("/a/forgot/password", {
+                        numbers,
+                        otp
+                    })
+                )
+                .then(result => {
+                    var answer = this.handleResponse(result);
+                    if (answer) {
+                        console.log('result', result);
+                        return resolve(result);
+                    }
+                })
+                .catch(err => {
+                    return reject(err);
+                });
+        });
+    }
+
+    changePassword(adminID, password) {
+        return new Promise((resolve, reject) => {
+            http
+                .request(
+                    this.makePost("/a/change/password", {
+                        adminID,
+                        password
                     })
                 )
                 .then(result => {

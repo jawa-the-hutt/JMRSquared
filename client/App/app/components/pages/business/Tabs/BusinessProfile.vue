@@ -39,7 +39,7 @@
   
           <ActivityIndicator v-if="!Notifications" row="3" col="0" colSpan="3" textAlignment="center" verticalAlignment="center" :busy="!Notifications"></ActivityIndicator>
   
-          <Fab @tap="GoTo(sendNotificationPage)" row="3" col="0" colSpan="3" icon="res://ic_bell_plus_white_24dp" class="fab-button fixedBtn"></Fab>
+          <Fab @tap="GoTo(sendNotificationPage)" verticalAlignment="bottom" row="3" col="0" rowSpan="2" colSpan="3" icon="res://ic_bell_plus_white_24dp" class="fab-button fixedBtn"></Fab>
   
           <StackLayout row="3" col="0" colSpan="3" @tap="refreshList($event)" v-if="Notifications && Notifications.length == 0 && !isLoading" class="p-x-15 p-5 text-dark-black" verticalAlignment="center">
             <label textAlignment="center" class="mdi p-5" fontSize="50%" :text="'mdi-bell' | fonticon"></label>
@@ -83,235 +83,236 @@
 </template>
 
 <script>
-  const dialogs = require("ui/dialogs");
-  import application from "application";
-  
-  export default {
-    data() {
-      return {
-        tabs: ["Summary", "Expenses", "Activities"],
-        sendNotificationPage: {},
-        Notifications: null,
-        Expenses: [12, 12, 12, 12, 12, 12],
-        summaryStats: [],
-        isMainScreen: false,
-        selectedScreen: "",
-        selectedNotification: null,
-        notificationBlankMessage: "",
-        cards: [{
-            text: "new new 86",
-            img: "",
-            redirect: "/admin/fulham/home",
-            type: "page"
-          },
-          {
-            text: "Hot Cash",
-            img: "",
-            redirect: "/home",
-            type: "page"
-          }
-        ],
-        businessPartner: {}
-      };
-    },
-    mounted() {
-      this.businessPartner = {
-        title: "Partners",
-        isToParent: false,
-        link: `/business/partners/list`,
-        props: {
-          businessId: this.business._id,
-          businessName: this.business.name
+const dialogs = require("ui/dialogs");
+import application from "application";
+
+export default {
+  data() {
+    return {
+      tabs: ["Summary", "Expenses", "Activities"],
+      sendNotificationPage: {},
+      Notifications: null,
+      Expenses: [12, 12, 12, 12, 12, 12],
+      summaryStats: [],
+      isMainScreen: false,
+      selectedScreen: "",
+      selectedNotification: null,
+      notificationBlankMessage: "",
+      cards: [
+        {
+          text: "new new 86",
+          img: "",
+          redirect: "/admin/fulham/home",
+          type: "page"
         },
-        value: this.business.admin && this.business.admin.length
-      };
-  
-      if (this.businessPartner.value && this.businessPartner.value == 1) {
-        this.businessPartner.value =
-          this.businessPartner.value + " client/worker";
-      } else if (this.businessPartner.value != 1) {
-        this.businessPartner.value =
-          this.businessPartner.value + " clients/workers";
-      }
-  
-      var revenue_profit =
-        this.business.revenues &&
-        this.business.revenues.values &&
-        this.business.revenues.values.find(v => v.key == "overall");
-  
-      this.summaryStats.push({
-        title: "Revenue",
-        isToParent: true,
-        link: `Stats`,
-        value: revenue_profit ?
-          "R" +
+        {
+          text: "Hot Cash",
+          img: "",
+          redirect: "/home",
+          type: "page"
+        }
+      ],
+      businessPartner: {}
+    };
+  },
+  mounted() {
+    this.businessPartner = {
+      title: "Partners",
+      isToParent: false,
+      link: `/business/partners/list`,
+      props: {
+        businessId: this.business._id,
+        businessName: this.business.name
+      },
+      value: this.business.admin && this.business.admin.length
+    };
+
+    if (this.businessPartner.value && this.businessPartner.value == 1) {
+      this.businessPartner.value =
+        this.businessPartner.value + " client/worker";
+    } else if (this.businessPartner.value != 1) {
+      this.businessPartner.value =
+        this.businessPartner.value + " clients/workers";
+    }
+
+    var revenue_profit =
+      this.business.revenues &&
+      this.business.revenues.values &&
+      this.business.revenues.values.find(v => v.key == "overall");
+
+    this.summaryStats.push({
+      title: "Revenue",
+      isToParent: true,
+      link: `Stats`,
+      value: revenue_profit
+        ? "R" +
           this.$approx(revenue_profit.revenue, {
             min10k: true
-          }) :
-          "null"
-      });
-  
-      this.summaryStats.push({
-        title: "Profit",
-        isToParent: false,
-        link: `/business/income/list`,
-        props: {
-          businessId: this.business._id,
-          businessName: this.business.name
-        },
-        value: revenue_profit ?
-          "R" +
+          })
+        : "null"
+    });
+
+    this.summaryStats.push({
+      title: "Profit",
+      isToParent: false,
+      link: `/business/income/list`,
+      props: {
+        businessId: this.business._id,
+        businessName: this.business.name
+      },
+      value: revenue_profit
+        ? "R" +
           this.$approx(revenue_profit.profit, {
             min10k: true
-          }) :
-          "null"
-      });
-  
-      this.summaryStats.push({
-        title: "Expenses",
-        isToParent: false,
-        link: `/business/expenses/list`,
-        props: {
-          businessId: this.business._id,
-          businessName: this.business.name
-        },
-        value: revenue_profit ?
-          "R" +
+          })
+        : "null"
+    });
+
+    this.summaryStats.push({
+      title: "Expenses",
+      isToParent: false,
+      link: `/business/expenses/list`,
+      props: {
+        businessId: this.business._id,
+        businessName: this.business.name
+      },
+      value: revenue_profit
+        ? "R" +
           this.$approx(revenue_profit.revenue - revenue_profit.profit, {
             min10k: true
-          }) :
-          "null"
-      });
-  
-      this.sendNotificationPage = {
-        link: "/notification/send",
-        props: {
-          businessId: this.business._id,
-          businessName: this.business.name
-        }
-      };
-      this.getNotifications();
+          })
+        : "null"
+    });
+
+    this.sendNotificationPage = {
+      link: "/notification/send",
+      props: {
+        businessId: this.business._id,
+        businessName: this.business.name
+      }
+    };
+    this.getNotifications();
+  },
+  props: ["business"],
+  methods: {
+    refreshList(args) {
+      this.getNotifications(args);
     },
-    props: ["business"],
-    methods: {
-      refreshList(args) {
-        this.getNotifications(args);
-      },
-      markNotificationAsSeen(notification) {
-        dialogs
-          .confirm({
-            title: "Mark as seen",
-            message: "Are you sure you want to remove this notification?",
-            okButtonText: "Yes",
-            cancelButtonText: "No"
-          })
-          .then(result => {
-            if (result) {
-              this.$api
-                .markNotificationAsSeen(notification._id)
-                .then(response => {
-                  this.selectedNotification = null;
-                  this.$feedback.success({
-                    title: "Notification removed"
-                  });
-                  var index = this.Notifications.indexOf(notification);
-                  this.Notifications.splice(index, 1);
-                })
-                .catch(err => {
-                  this.$feedback.error({
-                    title: "Notification not removed",
-                    message: err.message
-                  });
+    markNotificationAsSeen(notification) {
+      dialogs
+        .confirm({
+          title: "Mark as seen",
+          message: "Are you sure you want to remove this notification?",
+          okButtonText: "Yes",
+          cancelButtonText: "No"
+        })
+        .then(result => {
+          if (result) {
+            this.$api
+              .markNotificationAsSeen(notification._id)
+              .then(response => {
+                this.selectedNotification = null;
+                this.$feedback.success({
+                  title: "Notification removed"
                 });
-            }
+                var index = this.Notifications.indexOf(notification);
+                this.Notifications.splice(index, 1);
+              })
+              .catch(err => {
+                this.$feedback.error({
+                  title: "Notification not removed",
+                  message: err.message
+                });
+              });
+          }
+        });
+    },
+    showStats(option, toParent) {
+      if (!toParent) {
+        this.GoTo(option);
+      } else {
+        this.$emit("changeTab", option.link);
+      }
+    },
+    getNotifications(args = null) {
+      var rand = Math.floor(Math.random() * 10);
+      var randomQoutes = [
+        "You can view your previous transactions in the mean time",
+        "You can send out a notification to your partners",
+        "You can analyse your earnings and targets on Stats",
+        "Add a new transaction in the mean-time",
+        "Visit your settings and tweak your business to be how you like it to be",
+        "You can manage your partners in the mean-time",
+        "Success is not final; failure is not fatal: It is the courage to continue that counts.",
+        "Success usually comes to those who are too busy to be looking for it.",
+        "Opportunities don't happen. You create them.",
+        "If you are not willing to risk the usual, you will have to settle for the ordinary."
+      ];
+      this.notificationBlankMessage = randomQoutes[rand];
+
+      this.$api
+        .getNotifications(
+          this.$store.state.cache.cachedAdmin._id,
+          this.business._id
+        )
+        .then(notifications => {
+          if (args) {
+            args.object.refreshing = false;
+          }
+          this.Notifications = notifications;
+        })
+        .catch(err => {
+          if (args) {
+            args.object.refreshing = false;
+          }
+          this.$feedback.error({
+            title: "Unable to load new notifications.",
+            duration: 4000,
+            message: "Please try again later"
           });
-      },
-      showStats(option, toParent) {
-        if (!toParent) {
-          this.GoTo(option);
-        } else {
-          this.$emit("changeTab", option.link);
-        }
-      },
-      getNotifications(args = null) {
-        var rand = Math.floor(Math.random() * 10);
-        var randomQoutes = [
-          "You can view your previous transactions in the mean time",
-          "You can send out a notification to your partners",
-          "You can analyse your earnings and targets on Stats",
-          "Add a new transaction in the mean-time",
-          "Visit your settings and tweak your business to be how you like it to be",
-          "You can manage your partners in the mean-time",
-          "Success is not final; failure is not fatal: It is the courage to continue that counts.",
-          "Success usually comes to those who are too busy to be looking for it.",
-          "Opportunities don't happen. You create them.",
-          "If you are not willing to risk the usual, you will have to settle for the ordinary."
-        ];
-        this.notificationBlankMessage = randomQoutes[rand];
-  
-        this.$api
-          .getNotifications(
-            this.$store.state.cache.cachedAdmin._id,
-            this.business._id
-          )
-          .then(notifications => {
-            if (args) {
-              args.object.refreshing = false;
-            }
-            this.Notifications = notifications;
-          })
-          .catch(err => {
-            if (args) {
-              args.object.refreshing = false;
-            }
-            this.$feedback.error({
-              title: "Unable to load new notifications.",
-              duration: 4000,
-              message: "Please try again later"
-            });
-            this.Notifications = [];
-          });
-      },
-      GoTo(option) {
-        if (option.link) {
-          this.navigate(option.link, option.props);
-        }
+          this.Notifications = [];
+        });
+    },
+    GoTo(option) {
+      if (option.link) {
+        this.navigate(option.link, option.props);
       }
     }
-  };
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-  .overlayBG {
-    background-image: url("res://jmrlogo");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+.overlayBG {
+  background-image: url("res://jmrlogo");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.snapTop {
+  position: fixed;
+}
+
+.summaryStats {
+  &.visible {
+    animation-name: show;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
   }
-  
-  .snapTop {
-    position: fixed;
-  }
-  
-  .summaryStats {
-    &.visible {
-      animation-name: show;
-      animation-duration: 1s;
-      animation-fill-mode: forwards;
+  @keyframes show {
+    from {
+      transform: scale(0.1);
+      opacity: 0;
     }
-    @keyframes show {
-      from {
-        transform: scale(0.1);
-        opacity: 0;
-      }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
+    to {
+      transform: scale(1);
+      opacity: 1;
     }
   }
-  
-  .b-r-15 {
-    border: 2px solid red;
-  }
+}
+
+.b-r-15 {
+  border: 2px solid red;
+}
 </style>

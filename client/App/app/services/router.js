@@ -1,6 +1,7 @@
 import Home from '../components/pages/main/Home.vue'
 import Login from '../components/pages/main/Login.vue'
 import Register from '../components/pages/main/Register.vue'
+import ForgotPassword from '../components/pages/main/ForgotPassword.vue'
 
 // Admin
 import AdminDashboard from '../components/pages/admin/Dashboard.vue'
@@ -61,6 +62,15 @@ router.routes = {
     component: Register,
     meta: {
       title: 'Register',
+      authLevel: 0
+    },
+  },
+  '/forgot/password': {
+    name: 'forgotpassword',
+    path: '/forgot/password',
+    component: ForgotPassword,
+    meta: {
+      title: 'ForgotPassword',
       authLevel: 0
     },
   },

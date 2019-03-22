@@ -19,13 +19,18 @@
                 <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Email"></label>
                 <TextField row="1" col="1" :isEnabled="isEnterEmail" keyboardType="email" returnKeyType="next" v-model="user.email" autocorrect="true" autocapitalizationType="none" :class="{ 'light hidden': isEnterEmail}" :hidden="!isEnterEmail"></TextField>
               </GridLayout>
-  
+             
               <GridLayout class="m-10" rows="auto,auto" columns="auto,*">
                 <label row="0" rowSpan="2" col="0" verticalAlignment="center" textAlignment="center" class="mdi m-10" fontSize="25%" :text="'mdi-lock' | fonticon"></label>
                 <label row="0" col="1" class="h3 font-weight-bold text-mute" text="Password"></label>
                 <TextField row="1" col="1" ref="password" secure="true" returnKeyType="done" v-model="user.password" @returnPress="submit()" :class="{ light: !isLoading }"></TextField>
               </GridLayout>
   
+              <GridLayout columnss="*,auto">
+                <Ripple col="1" @tap="GoToForgotPassword()">
+                  <label textAlignment="right" class="text-mute text-dark-blue p-15" fontSize="12%" text="Forget password?"></label>
+                </Ripple>
+              </GridLayout>
               <ActivityIndicator v-show="isLoading" :busy="isLoading"></ActivityIndicator>
   
               <StackLayout v-show="!isLoading">
@@ -84,6 +89,9 @@ export default {
     GoToRegister() {
       this.navigate("/register");
     },
+    GoToForgotPassword() {
+      this.navigate("/forgot/password");
+    },
     pageLoaded() {
       this.$store.commit("refreshCache", {
         db: this.$db,
@@ -104,43 +112,34 @@ export default {
           pass: this.user.password
         })
         .then(response => {
-          var statusCode = response.statusCode;
-          if (statusCode == 200) {
-            var result = response.content.toJSON();
-            this.appSettings.setString("CurrentUserID", result._id);
-            this.$api
-              .getAuthToken()
-              .then(answer => {
-                console.log("tag getting auth after login", answer);
-                this.loginAdmin(self, result);
-                this.isLoading = false;
-                this.navigate("/admin/dashboard", null, {
-                  clearHistory: true,
-                  transition: {
-                    name: "slideTop",
-                    duration: 1000,
-                    curve: "spring"
-                  }
-                });
-              })
-              .catch(err => {
-                this.$feedback.warning({
-                  title: "Access denied!",
-                  duration: 40000,
-                  message: err.message
-                });
-                this.isLoading = false;
-                this.navigate("/home", null, {
-                  clearHistory: true
-                });
+          var result = response.content.toJSON();
+          this.appSettings.setString("CurrentUserID", result._id);
+          this.$api
+            .getAuthToken()
+            .then(answer => {
+              console.log("tag getting auth after login", answer);
+              this.loginAdmin(self, result);
+              this.isLoading = false;
+              this.navigate("/admin/dashboard", null, {
+                clearHistory: true,
+                transition: {
+                  name: "slideTop",
+                  duration: 1000,
+                  curve: "spring"
+                }
               });
-          } else if (statusCode == 512) {
-            throw new Error(response.content.toString());
-          } else if (statusCode == 500) {
-            throw new Error("Internal server error");
-          } else {
-            throw new Error("Try again later");
-          }
+            })
+            .catch(err => {
+              this.$feedback.warning({
+                title: "Access denied!",
+                duration: 40000,
+                message: err.message
+              });
+              this.isLoading = false;
+              this.navigate("/home", null, {
+                clearHistory: true
+              });
+            });
         })
         .catch(err => {
           if (err.message.indexOf("Failed to connect") >= 0) {
