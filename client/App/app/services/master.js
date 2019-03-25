@@ -21,7 +21,7 @@ var firebase = require("nativescript-plugin-firebase");
 
 master.couchDB = new Couchbase("jmrdb");
 master.feedback = new Feedback();
-master.approximateNumber = require('../lib/approximate-number');
+master.approximateNumber = require('approximate-number');
 master.appSettings = require("application-settings");
 master.firebase = firebase;
 master.device_token = null;

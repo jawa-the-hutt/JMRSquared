@@ -215,25 +215,25 @@ export default {
           contact: "",
           relationship: ""
         }
-      };
-    },
-    watch: {
-      currentPage(newVal, oldVal) {
-        switch (newVal) {
-          case 0:
-            this.currentPageTitle = "General Information";
-            break;
-          case 1:
-            this.currentPageTitle = this.business.name + "`s logo";
-            break;
-          case 2:
-            this.currentPageTitle = "Verify information";
-            break;
-          default:
-            this.currentPageTitle = "";
-        }
-      }
-    };
+      },
+    }
+    // watch: {
+    //   currentPage(newVal, oldVal) {
+    //     switch (newVal) {
+    //       case 0:
+    //         this.currentPageTitle = "General Information";
+    //         break;
+    //       case 1:
+    //         this.currentPageTitle = this.business.name + "`s logo";
+    //         break;
+    //       case 2:
+    //         this.currentPageTitle = "Verify information";
+    //         break;
+    //       default:
+    //         this.currentPageTitle = "";
+    //     }
+    //   }
+    // },
   },
   watch: {
     currentPage(newVal, oldVal) {
@@ -343,25 +343,24 @@ export default {
   
                       this.isLoading = false;
                     }
-                  )
-                  .catch(err => {
-                    this.$feedback.error({
-                      title: "Server error",
-                      duration: 4000,
-                      message: err,
-                      onTap: () => {
-                        dialogs.alert("TODO : Handle the error");
-                      }
-                    });
-                    this.isLoading = false;
+                  })
+                .catch(err => {
+                  this.$feedback.error({
+                    title: "Server error",
+                    duration: 4000,
+                    message: err,
+                    onTap: () => {
+                      dialogs.alert("TODO : Handle the error");
+                    }
                   });
-              })
-              .catch(err => {
-                this.$feedback.error({
-                  title: "Unable to upload your logo",
-                  message: "Please choose another image, or go back and remove it.",
-                  duration: 4000
+                  this.isLoading = false;
                 });
+              })
+            .catch(err => {
+              this.$feedback.error({
+                title: "Unable to upload your logo",
+                message: "Please choose another image, or go back and remove it.",
+                duration: 4000
               });
             });
         } else {
@@ -397,18 +396,18 @@ export default {
   
                   this.isLoading = false;
                 }
-              )
-              .catch(err => {
-                this.$feedback.error({
-                  title: "Server error",
-                  duration: 4000,
-                  message: err,
-                  onTap: () => {
-                    dialogs.alert("TODO : Handle the error");
-                  }
-                });
-                this.isLoading = false;
+              })
+            .catch(err => {
+              this.$feedback.error({
+                title: "Server error",
+                duration: 4000,
+                message: err,
+                onTap: () => {
+                  dialogs.alert("TODO : Handle the error");
+                }
               });
+              this.isLoading = false;
+            });
           }
         }
       },
